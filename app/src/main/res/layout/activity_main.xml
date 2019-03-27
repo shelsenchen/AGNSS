@@ -22,43 +22,54 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingLeft="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="w,1:1"
-        app:layout_constraintTop_toBottomOf="@+id/sceneform_fragment"
+        app:layout_constraintTop_toBottomOf="@+id/ux_fragment"
         app:layout_constraintVertical_chainStyle="spread"
         app:layout_constraintVertical_weight="1">
 
-        <Button
-            android:id="@+id/btnMenu01"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="마커측점" />
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btnMenu01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="마커측점" />
 
-        <Button
-            android:id="@+id/btnMenu02"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="좌표측정" />
+            <Button
+                android:id="@+id/btnMenu02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="좌표측정" />
 
-        <Button
-            android:id="@+id/btnMenu03"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="거리측정" />
+            <Button
+                android:id="@+id/btnMenu03"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="거리측정" />
 
-        <Button
-            android:id="@+id/btnMenu04"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="화면캡쳐" />
+            <Button
+                android:id="@+id/btnMenu04"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="화면캡쳐" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btnMenu05"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="토지알림e" />
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btnMenu05"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="토지알림e" />
+        </LinearLayout>
+
+
+
 
 
 
