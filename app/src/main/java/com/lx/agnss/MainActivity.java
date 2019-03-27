@@ -1,7 +1,13 @@
 package com.lx.agnss;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -12,11 +18,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.PixelCopy;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.ux.ArFragment;
 
@@ -26,8 +40,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     // Sceenform fragment
     private ArFragment arFragment;
@@ -37,6 +52,19 @@ public class MainActivity extends AppCompatActivity {
     private Button btnMenu03;
     private Button btnMenu04;
     private Button btnMenu05;
+
+    //GoogleMap 변수 선언
+    private MapFragment mapFragment;
+    private GoogleMap mMap;
+    private MapView mapView;
+    private static final String MAP_VIEW_BUNDLE_KEY = "AIzaSyDFIvA8d4BKkrjXj_WYd_EDPFdxkOS4ww8";
+    private LatLng currentPostion;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+
+    //permmition
+    final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_ = 1001;
+    final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION_ = 1002;
 
 
     @Override
@@ -53,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         btnMenu05 = (Button)findViewById(R.id.btnMenu05);
 
         /*
-         ***   메뉴버튼 이벤트 처리  ***
+         ***   메뉴버튼 이벤트 처리 시작  ***
          */
         btnMenu01.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -92,11 +120,103 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // LX토지알림e 연동
-                Toast.makeText(getApplicationContext(), "버튼5(LX토지알림e 연동) 클릭",Toast.LENGTH_SHORT).show();
+                callLx();
+                //Toast.makeText(getApplicationContext(), "버튼5(LX토지알림e 연동) 클릭",Toast.LENGTH_SHORT).show();
             }
         });
+        /*
+         ***   메뉴버튼 이벤트 처리 끝   ***
+        */
+
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
+        //mapFragment.getMapAsync(this);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                currentPostion = new LatLng(location.getLatitude(), location.getLongitude());
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPostion));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
+                //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+                Log.d("onLocationChanged","Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        /* 퍼미션 설정 */
+        if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
     }
 
+    /* 지도 시작 */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        //mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMinZoomPreference(18);
+        mMap.setMyLocationEnabled(true);
+
+        UiSettings uiSettings = mMap.getUiSettings();
+        uiSettings.setCompassEnabled(true);
+
+
+        //seattle coordinates 37.400075, 127.103346
+        LatLng seattle = new LatLng(38.400075, 127.103346);
+        //mMap.addMarker(new MarkerOptions().position(seattle).title("Seattle"));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(seattle));
+
+
+
+
+
+      /*
+      float brearing = mMap.getMyLocation().getBearing();
+      CameraPosition newCamPos = new CameraPosition(currentPostion,8,1,brearing);
+      mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCamPos));
+      */
+
+    }
+    /* 지도 끝 */
+
+
+
+    /* 파일 저장 시작 */
     private void takePhoto() {
         final String filename = generateFilename();
         ArSceneView view = arFragment.getArSceneView();
@@ -170,4 +290,43 @@ public class MainActivity extends AppCompatActivity {
                 Environment.DIRECTORY_DCIM) + File.separator + "Screenshots/" + date + "_screenshot.jpg";
     }
     /* 파일 저장 End */
+
+    /* 외부 어플리케이션 실행 시작 */
+    public boolean getPackageList() {
+        boolean isExist = false;
+
+        PackageManager pkgMgr = getPackageManager();
+        List<ResolveInfo> mApps;
+        Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        mApps = pkgMgr.queryIntentActivities(mainIntent, 0);
+
+        try {
+            for (int i = 0; i < mApps.size(); i++) {
+                if(mApps.get(i).activityInfo.packageName.startsWith("kr.or.kcsc.android.application")){
+                    isExist = true;
+                    break;
+                }
+            }
+        }
+        catch (Exception e) {
+            isExist = false;
+        }
+        return isExist;
+    }
+    /* 외부 어플리케이션 실행 End */
+    public void callLx(){
+        boolean isExist = false;
+        isExist = getPackageList();
+
+        if(isExist){
+            Intent intent = getPackageManager().getLaunchIntentForPackage("kr.or.kcsc.android.application");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }else if(!isExist){
+            String url = "market://details?id=" + "kr.or.kcsc.android.application";
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(i);
+        }
+    }
 }

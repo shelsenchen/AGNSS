@@ -8,15 +8,14 @@
     tools:context=".MainActivity">
 
     <fragment
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
         android:id="@+id/ux_fragment"
         android:name="com.lx.agnss.service.impl.ArFragmentManager"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/linearLayout"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread"
-        app:layout_constraintVertical_weight="9"
-        />
+        app:layout_constraintVertical_weight="9" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -33,50 +32,50 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <Button
                 android:id="@+id/btnMenu01"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="마커측점" />
 
             <Button
                 android:id="@+id/btnMenu02"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="좌표측정" />
 
             <Button
                 android:id="@+id/btnMenu03"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="거리측정" />
 
             <Button
                 android:id="@+id/btnMenu04"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="화면캡쳐" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
             <Button
                 android:id="@+id/btnMenu05"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="토지알림e" />
-            <Button
-                android:id="@+id/btnMenu06"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Test Button" />
+
         </LinearLayout>
-
-
-
-
 
 
     </LinearLayout>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        class="com.google.android.gms.maps.MapFragment"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

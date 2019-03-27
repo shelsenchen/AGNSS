@@ -3,6 +3,9 @@
     package="com.lx.agnss" >
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>     <!-- 파일 저장 Permission-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>       <!-- 현재 위치정보를 위한 퍼미션-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
     <application
         android:allowBackup="true"
