@@ -76,7 +76,6 @@
                 android:textSize="13sp"
                 android:layout_margin="3sp"
                 />
-
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu05"
                 android:layout_width="60dp"
@@ -88,7 +87,6 @@
                 android:textAllCaps="false"
                 android:layout_margin="3sp"
                 />
-
         </LinearLayout>
 
 
