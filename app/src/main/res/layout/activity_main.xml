@@ -66,6 +66,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="토지알림e" />
+            <Button
+                android:id="@+id/btnMenu06"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Test Button" />
         </LinearLayout>
 
 
