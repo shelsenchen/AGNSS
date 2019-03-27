@@ -33,35 +33,61 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <Button
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu01"
                 android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="마커측점" />
+                android:layout_height="30sp"
+                android:text="마커측점"
+                android:background="#4682b4"
+                android:textColor="#eeeeee"
+                android:textSize="13sp"
+                android:layout_margin="3sp"
+                />
 
-            <Button
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu02"
                 android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="좌표측정" />
+                android:layout_height="30sp"
+                android:text="좌표측정"
+                android:background="#4682b4"
+                android:textColor="#eeeeee"
+                android:textSize="13sp"
+                android:layout_margin="3sp"
+                />
 
-            <Button
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu03"
                 android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="거리측정" />
+                android:layout_height="30sp"
+                android:text="거리측정"
+                android:background="#4682b4"
+                android:textColor="#eeeeee"
+                android:textSize="13sp"
+                android:layout_margin="3sp"
+                />
 
-            <Button
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu04"
                 android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="화면캡쳐" />
+                android:layout_height="30sp"
+                android:text="화면캡쳐"
+                android:background="#4682b4"
+                android:textColor="#eeeeee"
+                android:textSize="13sp"
+                android:layout_margin="3sp"
+                />
 
-            <Button
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu05"
                 android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="토지알림e" />
+                android:layout_height="30sp"
+                android:text="토지알림e"
+                android:background="#4682b4"
+                android:textColor="#eeeeee"
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:layout_margin="3sp"
+                />
 
         </LinearLayout>
 
