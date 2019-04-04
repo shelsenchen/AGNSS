@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+
 import android.graphics.Canvas;
 import android.location.Location;
 import android.location.LocationListener;
@@ -25,6 +26,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,17 +43,24 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
+import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableException;
+import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
+import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.Sun;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
 import com.lx.agnss.service.impl.DemoUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -83,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Renderablesfor this app
     private ModelRenderable andyRenderable;
     private ViewRenderable popupLayoutRenderable;
+    private ModelRenderable iconRenderable;
+    private ModelRenderable distIconRenderable;
 
     //메뉴버튼
     private Button btnMenu01;
@@ -90,6 +102,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button btnMenu03;
     private Button btnMenu04;
     private Button btnMenu05;
+    private boolean chkDist = false;
+
+    private TextView locationView;
+    private TextView distanceView;
+
+    // 거리측정용 변수 선언
+    private Pose startPose = null;
+    private Pose endPose = null;
+    private Anchor distanceAnchor;
 
     //GoogleMap 변수 선언
     private MapFragment mapFragment;
@@ -132,6 +153,87 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnMenu04 = (Button)findViewById(R.id.btnMenu04);
         btnMenu05 = (Button)findViewById(R.id.btnMenu05);
 
+        locationView = (TextView)findViewById(R.id.locationView);
+        distanceView = (TextView)findViewById(R.id.distanceView);
+
+        /* 기본 마커 아이콘 */
+        ModelRenderable.builder()
+                //.setSource(this,R.raw.andy)
+                .setSource(this,Uri.parse("default_icon.sfb"))
+                .build()
+                .thenAccept(renderable -> iconRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                            Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        }
+                );
+
+        /* 거리측정용 마커 아이콘*/
+        ModelRenderable.builder()
+                //.setSource(this,R.raw.andy)
+                .setSource(this,Uri.parse("distance_icon.sfb"))
+                .build()
+                .thenAccept(renderable -> distIconRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        }
+                );
+
+         arFragment.setOnTapArPlaneListener(
+                 (HitResult hitResult, Plane plan, MotionEvent motionEvent) -> {
+                     if(iconRenderable == null || distIconRenderable == null){
+                         return;
+                     }
+
+                     if(!chkDist){
+                         Anchor anchor = hitResult.createAnchor();
+                         AnchorNode anchorNode = new AnchorNode(anchor);
+                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                         TransformableNode icon = new TransformableNode(arFragment.getTransformationSystem());
+                         icon.setParent(anchorNode);
+                         icon.setRenderable(iconRenderable);
+                         icon.select();
+                     }else if(chkDist){
+                         distanceAnchor = hitResult.createAnchor();
+                         AnchorNode anchorNode = new AnchorNode(distanceAnchor);
+                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                         distIcon.setParent(anchorNode);
+                         distIcon.setRenderable(distIconRenderable);
+                         distIcon.select();
+
+                         if(startPose == null){
+                             startPose = hitResult.getHitPose();
+                             distanceView.setText("두번째 지점을 선택해 주세요");
+                         }else if(startPose != null){
+                             endPose = hitResult.getHitPose();
+
+                             double distanceM = Math.sqrt(Math.pow((startPose.tx() - endPose.tx()), 2) +
+                                     Math.pow((startPose.ty() - endPose.ty()), 2) +
+                                     Math.pow((startPose.tz() - endPose.tz()), 2));
+
+                             startPose = null;
+
+                             distanceView.setText("거리 : " + String.format("%.2f",distanceM) + "m");
+                         }
+                     }
+
+
+
+                 }
+         );
+
         /*
          ***   메뉴버튼 이벤트 처리 시작  ***
          */
@@ -155,7 +257,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 // 거리측정
-                Toast.makeText(getApplicationContext(), "버튼3(거리측정) 클릭",Toast.LENGTH_SHORT).show();
+                if(chkDist){
+                    chkDist = false;
+                    btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_off));
+                    distanceView.setVisibility(View.INVISIBLE);
+                    distanceView.setText("");
+                    onClear();
+                }else if(!chkDist){
+                    chkDist = true;
+                    btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_on));
+                    distanceView.setVisibility(View.VISIBLE);
+                    distanceView.setText("첫번째 지점을 선택해 주세요");
+                }
+                //Toast.makeText(getApplicationContext(), "버튼3(거리측정) 클릭",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -197,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
                 Log.d("onLocationChanged","Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+                locationView.setText("Lon : "+location.getLongitude()+", Lat : "+location.getLatitude());
 
             }
 
@@ -671,7 +786,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         loadingMessageSnackbar =
                 Snackbar.make(
                         MainActivity.this.findViewById(android.R.id.content),
-                        "Searching for surfaces",
+                        "서페이스 탐색중입니다",
                         Snackbar.LENGTH_INDEFINITE);
         loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);
         loadingMessageSnackbar.show();
@@ -684,6 +799,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         loadingMessageSnackbar.dismiss();
         loadingMessageSnackbar = null;
+    }
+
+    private void onClear() {
+        List<Node> children = new ArrayList<>(arFragment.getArSceneView().getScene().getChildren());
+        for (Node node : children) {
+            if (node instanceof AnchorNode) {
+                if (((AnchorNode) node).getAnchor() != null) {
+                    ((AnchorNode) node).getAnchor().detach();
+                }
+            }
+            if (!(node instanceof Camera) && !(node instanceof Sun)) {
+                node.setParent(null);
+            }
+        }
     }
 
 

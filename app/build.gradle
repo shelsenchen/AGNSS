@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.ar.sceneform.plugin'
 
 android {
     compileSdkVersion 28
@@ -35,3 +36,14 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.github.appoly:ARCore-Location:1.1.2'
 }
+
+
+sceneform.asset('sampledata/distance_icon.fbx',
+        'default',
+        'sampledata/distance_icon.sfa',
+        'src/main/assets/distance_icon')
+
+sceneform.asset('sampledata/default_icon.fbx',
+        'default',
+        'sampledata/default_icon.sfa',
+        'src/main/assets/default_icon')

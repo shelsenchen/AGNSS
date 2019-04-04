@@ -28,64 +28,60 @@
 
         <LinearLayout
             android:id="@+id/menuLayout"
-            android:paddingLeft="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp">
 
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu01"
                 android:layout_width="60dp"
                 android:layout_height="30sp"
-                android:text="마커측점"
-                android:background="#4682b4"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
                 android:layout_margin="3sp"
-                />
+                android:background="#4682b4"
+                android:text="마커측점"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
 
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu02"
                 android:layout_width="60dp"
                 android:layout_height="30sp"
-                android:text="좌표측정"
-                android:background="#4682b4"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
                 android:layout_margin="3sp"
-                />
+                android:background="#4682b4"
+                android:text="좌표측정"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
 
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu03"
                 android:layout_width="60dp"
                 android:layout_height="30sp"
-                android:text="거리측정"
-                android:background="#4682b4"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
                 android:layout_margin="3sp"
-                />
+                android:background="#4682b4"
+                android:text="거리측정"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
 
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu04"
                 android:layout_width="60dp"
                 android:layout_height="30sp"
-                android:text="화면캡쳐"
-                android:background="#4682b4"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
                 android:layout_margin="3sp"
-                />
+                android:background="#4682b4"
+                android:text="화면캡쳐"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
+
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnMenu05"
                 android:layout_width="60dp"
                 android:layout_height="30sp"
-                android:text="토지알림e"
-                android:background="#4682b4"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:textAllCaps="false"
                 android:layout_margin="3sp"
-                />
+                android:background="#4682b4"
+                android:text="토지알림e"
+                android:textAllCaps="false"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
         </LinearLayout>
 
 
@@ -108,5 +104,33 @@
             android:layout_height="match_parent"
             />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/locationView"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Lon : , Lat :  "
+        android:textAlignment="textEnd"
+        android:textSize="24sp"
+        android:background="#88ffffff"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/distanceView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="24sp"
+        android:textColor="#FFEE00"
+        android:text=""
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
