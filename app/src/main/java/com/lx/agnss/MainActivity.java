@@ -1,10 +1,12 @@
 package com.lx.agnss;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,15 +15,22 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.PixelCopy;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,21 +40,50 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.ar.core.Frame;
+import com.google.ar.core.Plane;
+import com.google.ar.core.Session;
+import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.CameraNotAvailableException;
+import com.google.ar.core.exceptions.UnavailableException;
 import com.google.ar.sceneform.ArSceneView;
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.lx.agnss.service.impl.DemoUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import uk.co.appoly.arcorelocation.LocationMarker;
+import uk.co.appoly.arcorelocation.LocationScene;
+import uk.co.appoly.arcorelocation.rendering.LocationNode;
+import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
+import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+    private boolean installRequested;
+    private boolean hasFinishedLoading = false;
+    private Snackbar loadingMessageSnackbar = null;
 
     // Sceenform fragment
     private ArFragment arFragment;
+    private ArSceneView arSceneView;
+    private LocationScene locationScene;
+
+    // Renderablesfor this app
+    private ModelRenderable andyRenderable;
+    private ViewRenderable popupLayoutRenderable;
+
     //메뉴버튼
     private Button btnMenu01;
     private Button btnMenu02;
@@ -65,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     //permmition
     final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_ = 1001;
     final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION_ = 1002;
+    final int PERMISSION = 1;
 
 
     @Override
@@ -72,7 +111,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* Reqeust Permission */
+        if ( Build.VERSION.SDK_INT >= 23 &&
+                        ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+            ){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                                        Manifest.permission.CAMERA}, PERMISSION);
+        }
+        /* Request Permission End */
+
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+        arSceneView = arFragment.getArSceneView();
 
         btnMenu01 = (Button)findViewById(R.id.btnMenu01);
         btnMenu02 = (Button)findViewById(R.id.btnMenu02);
@@ -111,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 // 화면캡쳐
-                Toast.makeText(getApplicationContext(), "버튼4(화면캡쳐) 클릭",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "버튼4(화면캡쳐) 클릭",Toast.LENGTH_SHORT).show();
                 takePhoto();
             }
         });
@@ -134,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
-        //mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
@@ -169,8 +221,139 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        /* 퍼미션 설정 끝 */
+
+        /*
+        * 건물 및 마커정보 표출 시작
+        * */
+        // Build a renderable from a 2D View.
+        CompletableFuture<ViewRenderable> popupLayout =
+                ViewRenderable.builder()
+                        .setView(this, R.layout.popup_layout)
+                        .build();
+
+        // When you build a Renderable, Sceneform loads its resources in the background while returning
+        // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
+        CompletableFuture<ModelRenderable> andy = ModelRenderable.builder()
+                .setSource(this,R.raw.andy)
+                .build();
+
+        CompletableFuture.allOf(popupLayout, andy)
+                .handle(
+                        (notUsed, throwable) -> {
+                            // When you build a Renderable, Sceneform loads its resources in the background while
+                            // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
+                            // before calling get().
+
+                            if(throwable != null) {
+                                DemoUtils.displayError(this, "Unalbe to load renderables",throwable);
+                                return null;
+                            }
+
+                            try {
+                                popupLayoutRenderable = popupLayout.get();
+                                Log.e("try success","complete get popupLayout");
+                                //andyRenderable = andy.get();
+                                hasFinishedLoading = true;
+
+                            }catch (InterruptedException | ExecutionException ex){
+                                Log.e("error","Unable to load renderables");
+                                DemoUtils.displayError(this, "Unable to load renderables", ex);
+                            }
+
+                            return null;
+                        }
+                );
+
+        // Set an update listener on the Scene that will hide the loading message once a Plane is
+        // detected.
+        arSceneView
+                .getScene()
+                .addOnUpdateListener(
+                        frameTime -> {
+
+                            if(!hasFinishedLoading){
+                                return;
+                            }
+
+                            if (locationScene == null) {
+
+                                // If our locationScene object hasn't been setup yet, this is a good time to do it
+                                // We know that here, the AR components have been initiated.
+                                locationScene = new LocationScene(this, this, arSceneView);
+
+                                // Now lets create our location markers.
+                                // First, a layout
+                                List<LocationMarker> LLM = new ArrayList<LocationMarker>();
+                                LocationMarker layoutLocationMarker = new LocationMarker(
+                                        37.532946, 126.959868,
+                                        getExampleView()
+                                );
+
+                                // An example "onRender" event, called every frame
+                                // Updates the layout with the markers distance
+                                layoutLocationMarker.setRenderEvent(new LocationNodeRender() {
+                                    @Override
+                                    public void render(LocationNode locationNode) {
+                                        View eView = popupLayoutRenderable.getView();
+                                        TextView distanceTextView = eView.findViewById(R.id.textView2);
+                                        TextView nameView = eView.findViewById(R.id.textView1);
+                                        TextView addrView = eView.findViewById(R.id.textView3);
+                                        nameView.setText("롯데시네마 용산");
+                                        distanceTextView.setText("lon : 37.532946\nlat : 126.959868");
+                                        addrView.setText("주소 : 서울특별시 용산구 한강로3가 청파로 74");
+                                    }
+                                });
+
+
+                                // Adding the marker
+                                //locationScene.mLocationMarkers.add(layoutLocationMarker);
+
+                                LLM.add(layoutLocationMarker);
+
+                                locationScene.mLocationMarkers.addAll(LLM);
+
+                                // Adding a simple location marker of a 3D model
+//                                locationScene.mLocationMarkers.add(
+//                                        new LocationMarker(
+//                                                37.399543,
+//                                                127.107045,
+//                                                getAndy()));
+
+                            }
+
+                            Frame frame = arSceneView.getArFrame();
+
+                            if (frame == null) {
+                                return;
+                            }
+
+                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+                                return;
+                            }
+
+                            if (locationScene != null) {
+                                locationScene.processFrame(frame);
+                            }
+
+                            if (loadingMessageSnackbar != null) {
+                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+                                    if (plane.getTrackingState() == TrackingState.TRACKING) {
+                                        hideLoadingMessage();
+                                    }
+                                }
+                            }
+
+
+                });
+        // Lastly request CAMERA & fine location permission which is required by ARCore-Location.
+        ARLocationPermissionHelper.requestPermission(this);
+        /*
+        * 건물 및 마커정보 끝
+        * */
 
     }
+    /* OnCreate End */
 
     /* 지도 시작 */
     @Override
@@ -233,7 +416,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             PixelCopy.request(view, bitmap, (copyResult) -> {
                 if (copyResult == PixelCopy.SUCCESS) {
                     try {
-                        saveBitmapToDisk(bitmap, filename);
+                        /*
+                        LinearLayout fContainer1 = (LinearLayout)findViewById(R.id.menuLayout);
+                        fContainer1.buildDrawingCache();
+                        Bitmap fContainerLayoutView01 = fContainer1.getDrawingCache();
+
+                        LinearLayout fContainer2 = (LinearLayout)findViewById(R.id.mapLayout);
+                        fContainer2.buildDrawingCache();
+                        Bitmap fContainerLayoutView02 = fContainer2.getDrawingCache();
+
+                        Bitmap layout = mergeToPin(fContainerLayoutView01, fContainerLayoutView02);
+                        Bitmap result = mergeToPin(bitmap, layout);
+                        */
+
+
+                        ConstraintLayout fContainer = (ConstraintLayout)findViewById(R.id.masterLayout);
+                        fContainer.buildDrawingCache();
+                        Bitmap fContainerLayoutView = fContainer.getDrawingCache();
+
+                        Bitmap result = mergeToPin(bitmap, fContainerLayoutView);
+
+
+                        saveBitmapToDisk(result, filename);
+                        //saveBitmapToDisk(bitmap, filename);
                     } catch (IOException e) {
                         Toast toast = Toast.makeText(this, e.toString(),
                                 Toast.LENGTH_LONG);
@@ -289,6 +494,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM) + File.separator + "Screenshots/" + date + "_screenshot.jpg";
     }
+    public static Bitmap mergeToPin(Bitmap back, Bitmap front) {
+        Bitmap result = Bitmap.createBitmap(back.getWidth(), back.getHeight(), back.getConfig());
+        Canvas canvas = new Canvas(result);
+        int widthBack = 300; //back.getWidth();
+        int widthFront = 100; //front.getWidth();
+        //float move = (widthBack - widthFront) / 2;
+        canvas.drawBitmap(back, 0f, 0f, null);
+        //canvas.drawBitmap(front, move, move, null);
+        canvas.drawBitmap(front, 0, 0, null);
+        return result;
+    }
     /* 파일 저장 End */
 
     /* 외부 어플리케이션 실행 시작 */
@@ -314,7 +530,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return isExist;
     }
-    /* 외부 어플리케이션 실행 End */
+
     public void callLx(){
         boolean isExist = false;
         isExist = getPackageList();
@@ -329,4 +545,146 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(i);
         }
     }
+    /* 외부 어플리케이션 실행 End */
+
+    /**
+     * Example node of a layout
+     *
+     * @return
+     */
+    private Node getExampleView() {
+        Node base = new Node();
+        base.setRenderable(popupLayoutRenderable);
+        Context c = this;
+        // Add  listeners etc here
+        View eView = popupLayoutRenderable.getView();
+        eView.setOnTouchListener((v, event) -> {
+            Toast.makeText(
+                    c, "NC 소프트\n(37.399464, 127.108851)", Toast.LENGTH_LONG)
+                    .show();
+            return false;
+        });
+
+        return base;
+    }
+
+
+    /**
+     * Make sure we call locationScene.resume();
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (locationScene != null) {
+            locationScene.resume();
+        }
+
+        if (arSceneView.getSession() == null) {
+            // If the session wasn't created yet, don't resume rendering.
+            // This can happen if ARCore needs to be updated or permissions are not granted yet.
+            try {
+                Session session = DemoUtils.createArSession(this, installRequested);
+                if (session == null) {
+                    installRequested = ARLocationPermissionHelper.hasPermission(this);
+                    return;
+                } else {
+                    arSceneView.setupSession(session);
+                }
+            } catch (UnavailableException e) {
+                DemoUtils.handleSessionException(this, e);
+            }
+        }
+
+        try {
+            arSceneView.resume();
+        } catch (CameraNotAvailableException ex) {
+            DemoUtils.displayError(this, "Unable to get camera", ex);
+            finish();
+            return;
+        }
+
+        if (arSceneView.getSession() != null) {
+            showLoadingMessage();
+        }
+    }
+
+    /**
+     * Make sure we call locationScene.pause();
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (locationScene != null) {
+            locationScene.pause();
+        }
+
+        arSceneView.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        arSceneView.destroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
+        if (!ARLocationPermissionHelper.hasPermission(this)) {
+            if (!ARLocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
+                // Permission denied with checking "Do not ask again".
+                ARLocationPermissionHelper.launchPermissionSettings(this);
+            } else {
+                Toast.makeText(
+                        this, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
+                        .show();
+            }
+            finish();
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            // Standard Android full-screen functionality.
+            getWindow()
+                    .getDecorView()
+                    .setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+    private void showLoadingMessage() {
+        if (loadingMessageSnackbar != null && loadingMessageSnackbar.isShownOrQueued()) {
+            return;
+        }
+
+        loadingMessageSnackbar =
+                Snackbar.make(
+                        MainActivity.this.findViewById(android.R.id.content),
+                        "Searching for surfaces",
+                        Snackbar.LENGTH_INDEFINITE);
+        loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);
+        loadingMessageSnackbar.show();
+    }
+
+    private void hideLoadingMessage() {
+        if (loadingMessageSnackbar == null) {
+            return;
+        }
+
+        loadingMessageSnackbar.dismiss();
+        loadingMessageSnackbar = null;
+    }
+
+
 }

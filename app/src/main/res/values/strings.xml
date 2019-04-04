@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AGNSS</string>
+    <string name="google_maps_api_key">AIzaSyDFIvA8d4BKkrjXj_WYd_EDPFdxkOS4ww8</string>
 </resources>
