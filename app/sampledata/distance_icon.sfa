@@ -1,0 +1,61 @@
+{
+  animations: [
+    {
+      path: 'sampledata/distance_icon.fbx',
+    },
+  ],
+  materials: [
+    {
+      name: 'Material_64',
+      parameters: [
+        {
+          baseColor: [
+            0.92549000000000003,
+            0.109804,
+            0.141176,
+            1,
+          ],
+        },
+        {
+          baseColorMap: null,
+        },
+        {
+          normalMap: null,
+        },
+        {
+          interpolatedColor: null,
+        },
+        {
+          metallic: 0,
+        },
+        {
+          metallicMap: null,
+        },
+        {
+          roughness: 1,
+        },
+        {
+          roughnessMap: null,
+        },
+        {
+          opacity: null,
+        },
+      ],
+      source: 'build/sceneform_sdk/default_materials/fbx_material.sfm',
+    },
+  ],
+  model: {
+    attributes: [
+      'Position',
+      'Orientation',
+      'BoneIndices',
+      'BoneWeights',
+    ],
+    collision: {},
+    file: 'sampledata/distance_icon.fbx',
+    name: 'distance_icon',
+    recenter: 'root',
+    scale: 10.88977,
+  },
+  version: '0.54:2',
+}
