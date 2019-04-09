@@ -56,8 +56,14 @@ import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.Sun;
+import com.google.ar.sceneform.math.Quaternion;
+import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -218,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                              distanceView.setText("두번째 지점을 선택해 주세요");
                          }else if(startPose != null){
                              endPose = hitResult.getHitPose();
+                             addLineBetweenPoints(arFragment.getArSceneView().getScene(), startPose, endPose);
 
                              double distanceM = Math.sqrt(Math.pow((startPose.tx() - endPose.tx()), 2) +
                                      Math.pow((startPose.ty() - endPose.ty()), 2) +
@@ -226,6 +233,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                              startPose = null;
 
                              distanceView.setText("거리 : " + String.format("%.2f",distanceM) + "m");
+
+
                          }
                      }
 
@@ -815,5 +824,77 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+
+    private void addLineBetweenPoints(Scene scene, Pose fromPose, Pose toPose) {
+
+        // If you call without fucking anchor you never do anything. asshole.
+        if(fromPose == null || toPose == null) {
+            return;
+        }
+
+        //
+        Vector3 from, to;                               // vector variable from the Anchor.
+        float anchorX = 0.0f;
+        float anchorY = 0.0f;
+        float anchorZ = 0.0f;
+
+        anchorY = fromPose.ty();
+        anchorZ = fromPose.tz();
+        anchorX = fromPose.tx();
+        from = new Vector3(anchorX, anchorY, anchorZ);
+
+        anchorY = toPose.ty();
+        anchorZ = toPose.tz();
+        anchorX = toPose.tx();
+        to = new Vector3(anchorX, anchorY, anchorZ);
+
+        // prepare an anchor position
+        Quaternion camQ = scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{to.x, to.y, to.z};
+        // float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, camQ.w};
+        float[] f2 = new float[]{from.x, from.y, from.z, camQ.w};
+        Pose anchorPose = new Pose(f1, f2);
+
+        // make an ARCore Anchor
+        // But you mother fucker don't any explain to mCallback.
+        // Than I make an anchor freely.
+        // Original source in this below.
+        // Anchor anchor = mCallback.getSession().createAnchor(anchorPose);
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        // Node that is automatically positioned in world space based on the ARCore Anchor.
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        anchorNode.setParent(scene);
+
+        // Compute a line's length
+        float lineLength = Vector3.subtract(from, to).length();
+
+        // Prepare a color
+        Color colorOrange = new Color(android.graphics.Color.parseColor("#ffa71c"));
+
+        // 1. make a material by the color
+        MaterialFactory.makeOpaqueWithColor(arFragment.getContext(), colorOrange)
+                .thenAccept(material -> {
+                    // 2. make a model by the material
+                    ModelRenderable model = ShapeFactory.makeCylinder(0.0025f, lineLength,
+                            new Vector3(0f, lineLength / 2, 0f), material);
+                    model.setShadowReceiver(false);
+                    model.setShadowCaster(false);
+
+                    // 3. make node
+                    Node node = new Node();
+                    node.setRenderable(model);
+                    node.setParent(anchorNode);
+
+                    // 4. set rotation
+                    final Vector3 difference = Vector3.subtract(to, from);
+                    final Vector3 directionFromTopToBottom = difference.normalized();
+                    final Quaternion rotationFromAToB =
+                            Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+                    node.setWorldRotation(Quaternion.multiply(rotationFromAToB,
+                            Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 90)));
+                });
+    }
 
 }
