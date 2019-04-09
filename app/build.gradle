@@ -47,3 +47,9 @@ sceneform.asset('sampledata/default_icon.fbx',
         'default',
         'sampledata/default_icon.sfa',
         'src/main/assets/default_icon')
+
+
+sceneform.asset('sampledata/reverse_drop.obj',
+        'default',
+        'sampledata/reverse_drop.sfa',
+        'src/main/assets/reverse_drop')

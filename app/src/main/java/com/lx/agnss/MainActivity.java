@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         /* 거리측정용 마커 아이콘*/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("distance_icon.sfb"))
+                .setSource(this,Uri.parse("reverse_drop.sfb"))
                 .build()
                 .thenAccept(renderable -> distIconRenderable = renderable)
                 .exceptionally(
@@ -206,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                          anchorNode.setParent(arFragment.getArSceneView().getScene());
 
                          TransformableNode icon = new TransformableNode(arFragment.getTransformationSystem());
+                         icon.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 90f));
                          icon.setParent(anchorNode);
                          icon.setRenderable(iconRenderable);
                          icon.select();
@@ -215,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                          anchorNode.setParent(arFragment.getArSceneView().getScene());
 
                          TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                         distIcon.setLocalRotation(Quaternion.axisAngle(new Vector3(0,1f,0), 90f));
                          distIcon.setParent(anchorNode);
                          distIcon.setRenderable(distIconRenderable);
                          distIcon.select();

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lx.agnss;
+package com.lx.agnss.service.impl;
 
 import android.app.Activity;
 import android.support.design.widget.BaseTransientBottomBar;
