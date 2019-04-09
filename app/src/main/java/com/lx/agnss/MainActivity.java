@@ -23,6 +23,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,6 +50,7 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
+import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableException;
@@ -63,6 +65,7 @@ import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
@@ -102,6 +105,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ModelRenderable iconRenderable;
     private ModelRenderable distIconRenderable;
 
+    // 용산 전주 model
+    private ModelRenderable mrJeonJuBuildingDEM;
+    private ModelRenderable mrJeonJuPointOut;
+    private ModelRenderable mrYongSanBuildingDEM;
+    private ModelRenderable mrYongSanPointOut;
+
+    private boolean boolJeonJuBuildingDEM = true;
+    private boolean boolJeonJuPointOut = false;
+    private boolean boolYongSanBuildingDEM = false;
+    private boolean boolYongSanPointOut = false;
+
     //메뉴버튼
     private Button btnMenu01;
     private Button btnMenu02;
@@ -109,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button btnMenu04;
     private Button btnMenu05;
     private boolean chkDist = false;
+
+    // 지적 건물 표출용 임시 버튼
+    private Button btnJeonJuBuildingDEM;
+    private Button btnJeonJuPointOut;
+    private Button btnYongSanBuildingDEM;
+    private Button btnYongSanPointOut;
 
     private TextView locationView;
     private TextView distanceView;
@@ -159,6 +179,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnMenu04 = (Button)findViewById(R.id.btnMenu04);
         btnMenu05 = (Button)findViewById(R.id.btnMenu05);
 
+        // 지적 & 건물정보 표출 임시버튼
+        btnJeonJuBuildingDEM = (Button)findViewById(R.id.btnJeonJuBuildingDEM_0);
+        btnJeonJuPointOut = (Button)findViewById(R.id.btnJeonJuPointOut_0);
+        btnYongSanBuildingDEM = (Button)findViewById(R.id.btnYoungSanBuildingDEM_0);
+        btnYongSanPointOut = (Button)findViewById(R.id.btnYoungSanPointOut_0);
+
         locationView = (TextView)findViewById(R.id.locationView);
         distanceView = (TextView)findViewById(R.id.distanceView);
 
@@ -184,6 +210,79 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setSource(this,Uri.parse("reverse_drop.sfb"))
                 .build()
                 .thenAccept(renderable -> distIconRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        }
+                );
+
+         /* 전주 건물
+          * private ModelRenderable mrJeonJuBuildingDEM;
+          **/
+        ModelRenderable.builder()
+                //.setSource(this,R.raw.andy)
+                .setSource(this,Uri.parse("JeonJuBuildingDEM_0.sfb"))
+                .build()
+                .thenAccept(renderable -> mrJeonJuBuildingDEM = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        }
+                );
+
+         /* 전주 지적
+          * private ModelRenderable mrJeonJuPointOut;
+          **/
+        ModelRenderable.builder()
+                //.setSource(this,R.raw.andy)
+                .setSource(this,Uri.parse("JeonJuPointOut_0.sfb"))
+                .build()
+                .thenAccept(renderable -> mrJeonJuPointOut = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        }
+                );
+
+         /* 용산 건물
+          * private ModelRenderable mrYongSanBuildingDEM;
+          * private ModelRenderable mrYongSanPointOut;
+          **/
+        ModelRenderable.builder()
+                //.setSource(this,R.raw.andy)
+                .setSource(this,Uri.parse("YongSanBuildingDEM_0.sfb"))
+                .build()
+                .thenAccept(renderable -> mrYongSanBuildingDEM = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        }
+                );
+
+         /* 용산 지적
+          * private ModelRenderable mrYongSanPointOut;
+          **/
+        ModelRenderable.builder()
+                //.setSource(this,R.raw.andy)
+                .setSource(this,Uri.parse("YongSanPointOut_0.sfb"))
+                .build()
+                .thenAccept(renderable -> mrYongSanPointOut = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
@@ -240,6 +339,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                          }
                      }
 
+                     // 전주 건물
+                     if(mrJeonJuBuildingDEM != null && boolJeonJuBuildingDEM == true) {
+                         Anchor makeAnchor = hitResult.createAnchor();
+                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                         distIcon.setParent(anchorNode);
+                         distIcon.setRenderable(mrJeonJuBuildingDEM);
+                         distIcon.select();
+                     }
+
+                     // 전주 지적
+                     if(mrJeonJuPointOut != null && boolJeonJuPointOut == true) {
+                         Anchor makeAnchor = hitResult.createAnchor();
+                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                         distIcon.setParent(anchorNode);
+                         distIcon.setRenderable(mrJeonJuPointOut);
+                         distIcon.select();
+                      }
+
+                     //용산 건물
+                     if(mrYongSanBuildingDEM != null && boolYongSanBuildingDEM == true) {
+                         Anchor makeAnchor = hitResult.createAnchor();
+                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                         distIcon.setParent(anchorNode);
+                         distIcon.setRenderable(mrYongSanBuildingDEM);
+                         distIcon.select();
+                     }
+
+                     // 용산 지적
+                     if(mrYongSanPointOut != null && boolYongSanPointOut == true) {
+                         Anchor makeAnchor = hitResult.createAnchor();
+                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                         distIcon.setParent(anchorNode);
+                         distIcon.setRenderable(mrYongSanPointOut);
+                         distIcon.select();
+                     }
 
 
                  }
@@ -301,6 +447,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //Toast.makeText(getApplicationContext(), "버튼5(LX토지알림e 연동) 클릭",Toast.LENGTH_SHORT).show();
             }
         });
+
+        btnJeonJuBuildingDEM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Scene scene = arFragment.getArSceneView().getScene();
+                Quaternion camQ = scene.getCamera().getWorldRotation();
+
+//                Trackable tt = arFragment.pl
+                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+                Pose anchorPose = new Pose(f1, f2);
+//                Pose anchorPose = scene.getCamera().x
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+                placeObject(arFragment, anchor, Uri.parse("JeonJuBuildingDEM_0.sfb"));
+
+            }
+        });
+
+
+
         /*
          ***   메뉴버튼 이벤트 처리 끝   ***
         */
@@ -899,4 +1068,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+
+    private void placeObject(ArFragment fragment, Anchor anchor, Uri model) {
+        ModelRenderable.builder()
+                .setSource(fragment.getContext(), model)
+                .build()
+                .thenAccept(renderable -> addNodeToScene(fragment, anchor, renderable))
+                .exceptionally((throwable -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage(throwable.getMessage())
+                            .setTitle("Error!");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    return null;
+                }));
+    }
+
+    private void addNodeToScene(ArFragment fragment, Anchor anchor, Renderable renderable) {
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        TransformableNode node = new TransformableNode(fragment.getTransformationSystem());
+        node.setRenderable(renderable);
+        node.setParent(anchorNode);
+        fragment.getArSceneView().getScene().addChild(anchorNode);
+        node.select();
+    }
 }

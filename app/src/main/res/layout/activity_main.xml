@@ -82,6 +82,51 @@
                 android:textAllCaps="false"
                 android:textColor="#eeeeee"
                 android:textSize="13sp" />
+
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/btnJeonJuBuildingDEM_0"
+                android:layout_width="60dp"
+                android:layout_height="30sp"
+                android:layout_margin="3sp"
+                android:background="#4682b4"
+                android:text="전주건물"
+                android:textAllCaps="false"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
+
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/btnJeonJuPointOut_0"
+                android:layout_width="60dp"
+                android:layout_height="30sp"
+                android:layout_margin="3sp"
+                android:background="#4682b4"
+                android:text="전주지적"
+                android:textAllCaps="false"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
+
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/btnYoungSanBuildingDEM_0"
+                android:layout_width="60dp"
+                android:layout_height="30sp"
+                android:layout_margin="3sp"
+                android:background="#4682b4"
+                android:text="용산건물"
+                android:textAllCaps="false"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
+
+            <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/btnYoungSanPointOut_0"
+                android:layout_width="60dp"
+                android:layout_height="30sp"
+                android:layout_margin="3sp"
+                android:background="#4682b4"
+                android:text="용산지적"
+                android:textAllCaps="false"
+                android:textColor="#eeeeee"
+                android:textSize="13sp" />
+
         </LinearLayout>
 
 
