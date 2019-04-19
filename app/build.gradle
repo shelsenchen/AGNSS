@@ -53,11 +53,6 @@ sceneform.asset('sampledata/reverse_drop.obj',
         'sampledata/reverse_drop.sfa',
         'src/main/assets/reverse_drop')
 
-sceneform.asset('sampledata/JeonJuBuildingDEM_0.fbx',
-        'default',
-        'sampledata/JeonJuBuildingDEM_0.sfa',
-        'src/main/assets/JeonJuBuildingDEM_0')
-
 sceneform.asset('sampledata/YoungSanBuildingDEM_0.fbx',
         'default',
         'sampledata/YoungSanBuildingDEM_0.sfa',
@@ -67,8 +62,3 @@ sceneform.asset('sampledata/YoungSanPointOut_0.fbx',
         'default',
         'sampledata/YoungSanPointOut_0.sfa',
         'src/main/assets/YoungSanPointOut_0')
-
-sceneform.asset('sampledata/JeonJuPointOut_0.fbx',
-        'default',
-        'sampledata/JeonJuPointOut_0.sfa',
-        'src/main/assets/JeonJuPointOut_0')

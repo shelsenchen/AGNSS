@@ -20,7 +20,6 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -33,7 +32,6 @@ import android.view.PixelCopy;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +48,6 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableException;
@@ -229,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
          **/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this, Uri.parse("JeonJuBuildingDEM_0.sfb"))
+                .setSource(this, Uri.parse("reverse_drop.sfb"))
                 .build()
                 .thenAccept(renderable -> mrJeonJuBuildingDEM = renderable)
                 .exceptionally(
@@ -247,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
          **/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this, Uri.parse("JeonJuPointOut_0.sfb"))
+                .setSource(this, Uri.parse("reverse_drop.sfb"))
                 .build()
                 .thenAccept(renderable -> mrJeonJuPointOut = renderable)
                 .exceptionally(
@@ -467,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
-                placeObject(arFragment, anchor, Uri.parse("JeonJuBuildingDEM_0.sfb"));
+                placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
 
             }
         });
@@ -487,7 +484,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
-                placeObject(arFragment, anchor, Uri.parse("JeonJuPointOut_0.sfb"));
+                placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
             }
         });
 
