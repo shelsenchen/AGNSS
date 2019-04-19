@@ -89,7 +89,11 @@ import uk.co.appoly.arcorelocation.rendering.LocationNode;
 import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
 import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
 
+/**
+ * This class for the main activity job.
+ */
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
     private boolean installRequested;
     private boolean hasFinishedLoading = false;
     private Snackbar loadingMessageSnackbar = null;
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ModelRenderable mrYongSanBuildingDEM;
     private ModelRenderable mrYongSanPointOut;
 
-    private boolean boolJeonJuBuildingDEM = true;
+    private boolean boolJeonJuBuildingDEM = false;
     private boolean boolJeonJuPointOut = false;
     private boolean boolYongSanBuildingDEM = false;
     private boolean boolYongSanPointOut = false;
@@ -159,45 +163,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
 
         /* Reqeust Permission */
-        if ( Build.VERSION.SDK_INT >= 23 &&
-                        ContextCompat.checkSelfPermission( this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-            ){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                                                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                                        Manifest.permission.CAMERA}, PERMISSION);
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA}, PERMISSION);
         }
         /* Request Permission End */
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
         arSceneView = arFragment.getArSceneView();
 
-        btnMenu01 = (Button)findViewById(R.id.btnMenu01);
-        btnMenu02 = (Button)findViewById(R.id.btnMenu02);
-        btnMenu03 = (Button)findViewById(R.id.btnMenu03);
-        btnMenu04 = (Button)findViewById(R.id.btnMenu04);
-        btnMenu05 = (Button)findViewById(R.id.btnMenu05);
+        btnMenu01 = (Button) findViewById(R.id.btnMenu01);
+        btnMenu02 = (Button) findViewById(R.id.btnMenu02);
+        btnMenu03 = (Button) findViewById(R.id.btnMenu03);
+        btnMenu04 = (Button) findViewById(R.id.btnMenu04);
+        btnMenu05 = (Button) findViewById(R.id.btnMenu05);
 
         // 지적 & 건물정보 표출 임시버튼
-        btnJeonJuBuildingDEM = (Button)findViewById(R.id.btnJeonJuBuildingDEM_0);
-        btnJeonJuPointOut = (Button)findViewById(R.id.btnJeonJuPointOut_0);
-        btnYongSanBuildingDEM = (Button)findViewById(R.id.btnYoungSanBuildingDEM_0);
-        btnYongSanPointOut = (Button)findViewById(R.id.btnYoungSanPointOut_0);
+        btnJeonJuBuildingDEM = (Button) findViewById(R.id.btnJeonJuBuildingDEM_0);
+        btnJeonJuPointOut = (Button) findViewById(R.id.btnJeonJuPointOut_0);
+        btnYongSanBuildingDEM = (Button) findViewById(R.id.btnYoungSanBuildingDEM_0);
+        btnYongSanPointOut = (Button) findViewById(R.id.btnYoungSanPointOut_0);
 
-        locationView = (TextView)findViewById(R.id.locationView);
-        distanceView = (TextView)findViewById(R.id.distanceView);
+        locationView = (TextView) findViewById(R.id.locationView);
+        distanceView = (TextView) findViewById(R.id.distanceView);
 
         /* 기본 마커 아이콘 */
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("default_icon.sfb"))
+                .setSource(this, Uri.parse("default_icon.sfb"))
                 .build()
                 .thenAccept(renderable -> iconRenderable = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
-                            Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
@@ -207,198 +211,198 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         /* 거리측정용 마커 아이콘*/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("reverse_drop.sfb"))
+                .setSource(this, Uri.parse("reverse_drop.sfb"))
                 .build()
                 .thenAccept(renderable -> distIconRenderable = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
-                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
 
-         /* 전주 건물
-          * private ModelRenderable mrJeonJuBuildingDEM;
-          **/
+        /* 전주 건물
+         * private ModelRenderable mrJeonJuBuildingDEM;
+         **/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("JeonJuBuildingDEM_0.sfb"))
+                .setSource(this, Uri.parse("JeonJuBuildingDEM_0.sfb"))
                 .build()
                 .thenAccept(renderable -> mrJeonJuBuildingDEM = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
-                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
 
-         /* 전주 지적
-          * private ModelRenderable mrJeonJuPointOut;
-          **/
+        /* 전주 지적
+         * private ModelRenderable mrJeonJuPointOut;
+         **/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("JeonJuPointOut_0.sfb"))
+                .setSource(this, Uri.parse("JeonJuPointOut_0.sfb"))
                 .build()
                 .thenAccept(renderable -> mrJeonJuPointOut = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
-                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
 
-         /* 용산 건물
-          * private ModelRenderable mrYongSanBuildingDEM;
-          * private ModelRenderable mrYongSanPointOut;
-          **/
+        /* 용산 건물
+         * private ModelRenderable mrYongSanBuildingDEM;
+         * private ModelRenderable mrYongSanPointOut;
+         **/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("YongSanBuildingDEM_0.sfb"))
+                .setSource(this, Uri.parse("YongSanBuildingDEM_0.sfb"))
                 .build()
                 .thenAccept(renderable -> mrYongSanBuildingDEM = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
-                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
 
-         /* 용산 지적
-          * private ModelRenderable mrYongSanPointOut;
-          **/
+        /* 용산 지적
+         * private ModelRenderable mrYongSanPointOut;
+         **/
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
-                .setSource(this,Uri.parse("YongSanPointOut_0.sfb"))
+                .setSource(this, Uri.parse("YongSanPointOut_0.sfb"))
                 .build()
                 .thenAccept(renderable -> mrYongSanPointOut = renderable)
                 .exceptionally(
                         throwable -> {
                             Toast toast =
-                                    Toast.makeText(this,"Unalbe to load icon renderable",Toast.LENGTH_LONG);
+                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
 
-         arFragment.setOnTapArPlaneListener(
-                 (HitResult hitResult, Plane plan, MotionEvent motionEvent) -> {
-                     if(iconRenderable == null || distIconRenderable == null){
-                         return;
-                     }
+        arFragment.setOnTapArPlaneListener(
+                (HitResult hitResult, Plane plan, MotionEvent motionEvent) -> {
+                    if (iconRenderable == null || distIconRenderable == null) {
+                        return;
+                    }
 
-                     if(!chkDist){
-                         Anchor anchor = hitResult.createAnchor();
-                         AnchorNode anchorNode = new AnchorNode(anchor);
-                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+                    if (!chkDist) {
+                        Anchor anchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(anchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-                         TransformableNode icon = new TransformableNode(arFragment.getTransformationSystem());
-                         icon.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 90f));
-                         icon.setParent(anchorNode);
-                         icon.setRenderable(iconRenderable);
-                         icon.select();
-                     }else if(chkDist){
-                         distanceAnchor = hitResult.createAnchor();
-                         AnchorNode anchorNode = new AnchorNode(distanceAnchor);
-                         anchorNode.setParent(arFragment.getArSceneView().getScene());
+                        TransformableNode icon = new TransformableNode(arFragment.getTransformationSystem());
+                        icon.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 90f));
+                        icon.setParent(anchorNode);
+                        icon.setRenderable(iconRenderable);
+                        icon.select();
+                    } else if (chkDist) {
+                        distanceAnchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(distanceAnchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
-                         distIcon.setLocalRotation(Quaternion.axisAngle(new Vector3(0,1f,0), 90f));
-                         distIcon.setParent(anchorNode);
-                         distIcon.setRenderable(distIconRenderable);
-                         distIcon.select();
+                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                        distIcon.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 90f));
+                        distIcon.setParent(anchorNode);
+                        distIcon.setRenderable(distIconRenderable);
+                        distIcon.select();
 
-                         if(startPose == null){
-                             startPose = hitResult.getHitPose();
-                             distanceView.setText("두번째 지점을 선택해 주세요");
-                         }else if(startPose != null){
-                             endPose = hitResult.getHitPose();
-                             addLineBetweenPoints(arFragment.getArSceneView().getScene(), startPose, endPose);
+                        if (startPose == null) {
+                            startPose = hitResult.getHitPose();
+                            distanceView.setText("두번째 지점을 선택해 주세요");
+                        } else if (startPose != null) {
+                            endPose = hitResult.getHitPose();
+                            addLineBetweenPoints(arFragment.getArSceneView().getScene(), startPose, endPose);
 
-                             double distanceM = Math.sqrt(Math.pow((startPose.tx() - endPose.tx()), 2) +
-                                     Math.pow((startPose.ty() - endPose.ty()), 2) +
-                                     Math.pow((startPose.tz() - endPose.tz()), 2));
+                            double distanceM = Math.sqrt(Math.pow((startPose.tx() - endPose.tx()), 2) +
+                                    Math.pow((startPose.ty() - endPose.ty()), 2) +
+                                    Math.pow((startPose.tz() - endPose.tz()), 2));
 
-                             startPose = null;
+                            startPose = null;
 
-                             distanceView.setText("거리 : " + String.format("%.2f",distanceM) + "m");
-
-
-                         }
-                     }
-
-                     // 전주 건물
-                     if(mrJeonJuBuildingDEM != null && boolJeonJuBuildingDEM == true) {
-                         Anchor makeAnchor = hitResult.createAnchor();
-                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
-                         anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
-                         distIcon.setParent(anchorNode);
-                         distIcon.setRenderable(mrJeonJuBuildingDEM);
-                         distIcon.select();
-                     }
-
-                     // 전주 지적
-                     if(mrJeonJuPointOut != null && boolJeonJuPointOut == true) {
-                         Anchor makeAnchor = hitResult.createAnchor();
-                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
-                         anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
-                         distIcon.setParent(anchorNode);
-                         distIcon.setRenderable(mrJeonJuPointOut);
-                         distIcon.select();
-                      }
-
-                     //용산 건물
-                     if(mrYongSanBuildingDEM != null && boolYongSanBuildingDEM == true) {
-                         Anchor makeAnchor = hitResult.createAnchor();
-                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
-                         anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
-                         distIcon.setParent(anchorNode);
-                         distIcon.setRenderable(mrYongSanBuildingDEM);
-                         distIcon.select();
-                     }
-
-                     // 용산 지적
-                     if(mrYongSanPointOut != null && boolYongSanPointOut == true) {
-                         Anchor makeAnchor = hitResult.createAnchor();
-                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
-                         anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
-                         distIcon.setParent(anchorNode);
-                         distIcon.setRenderable(mrYongSanPointOut);
-                         distIcon.select();
-                     }
+                            distanceView.setText("거리 : " + String.format("%.2f", distanceM) + "m");
 
 
-                 }
-         );
+                        }
+                    }
+
+                    // 전주 건물
+                    if (mrJeonJuBuildingDEM != null && boolJeonJuBuildingDEM == true) {
+                        Anchor makeAnchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                        distIcon.setParent(anchorNode);
+                        distIcon.setRenderable(mrJeonJuBuildingDEM);
+                        distIcon.select();
+                    }
+
+                    // 전주 지적
+                    if (mrJeonJuPointOut != null && boolJeonJuPointOut == true) {
+                        Anchor makeAnchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                        distIcon.setParent(anchorNode);
+                        distIcon.setRenderable(mrJeonJuPointOut);
+                        distIcon.select();
+                    }
+
+                    //용산 건물
+                    if (mrYongSanBuildingDEM != null && boolYongSanBuildingDEM == true) {
+                        Anchor makeAnchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                        distIcon.setParent(anchorNode);
+                        distIcon.setRenderable(mrYongSanBuildingDEM);
+                        distIcon.select();
+                    }
+
+                    // 용산 지적
+                    if (mrYongSanPointOut != null && boolYongSanPointOut == true) {
+                        Anchor makeAnchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                        distIcon.setParent(anchorNode);
+                        distIcon.setRenderable(mrYongSanPointOut);
+                        distIcon.select();
+                    }
+
+
+                }
+        );
 
         /*
          ***   메뉴버튼 이벤트 처리 시작  ***
          */
-        btnMenu01.setOnClickListener(new View.OnClickListener(){
+        btnMenu01.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 마커측점
-                Toast.makeText(getApplicationContext(), "버튼1(마커측점) 클릭",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "버튼1(마커측점) 클릭", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -406,21 +410,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 // 좌표측정
-                Toast.makeText(getApplicationContext(), "버튼2(좌표측정) 클릭",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "버튼2(좌표측정) 클릭", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnMenu03.setOnClickListener(new View.OnClickListener(){
+        btnMenu03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 거리측정
-                if(chkDist){
+                if (chkDist) {
                     chkDist = false;
                     btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_off));
                     distanceView.setVisibility(View.INVISIBLE);
                     distanceView.setText("");
                     onClear();
-                }else if(!chkDist){
+                } else if (!chkDist) {
                     chkDist = true;
                     btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_on));
                     distanceView.setVisibility(View.VISIBLE);
@@ -452,14 +456,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
 
+                onClear();
+
                 Scene scene = arFragment.getArSceneView().getScene();
                 Quaternion camQ = scene.getCamera().getWorldRotation();
 
-//                Trackable tt = arFragment.pl
                 float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
                 float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
                 Pose anchorPose = new Pose(f1, f2);
-//                Pose anchorPose = scene.getCamera().x
 
                 Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
@@ -468,11 +472,66 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        btnJeonJuPointOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                onClear();
+
+                Scene scene = arFragment.getArSceneView().getScene();
+                Quaternion camQ = scene.getCamera().getWorldRotation();
+
+                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+                Pose anchorPose = new Pose(f1, f2);
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+                placeObject(arFragment, anchor, Uri.parse("JeonJuPointOut_0.sfb"));
+            }
+        });
+
+        btnYongSanBuildingDEM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onClear();
+
+                Scene scene = arFragment.getArSceneView().getScene();
+                Quaternion camQ = scene.getCamera().getWorldRotation();
+
+                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+                Pose anchorPose = new Pose(f1, f2);
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+                placeObject(arFragment, anchor, Uri.parse("YoungSanBuildingDEM_0.sfb"));
+            }
+        });
+
+        btnYongSanPointOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                onClear();
+
+                Scene scene = arFragment.getArSceneView().getScene();
+                Quaternion camQ = scene.getCamera().getWorldRotation();
+
+                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+                Pose anchorPose = new Pose(f1, f2);
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+                placeObject(arFragment, anchor, Uri.parse("YoungSanPointOut_0.sfb"));
+            }
+        });
 
         /*
          ***   메뉴버튼 이벤트 처리 끝   ***
-        */
+         */
 
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -490,8 +549,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-                Log.d("onLocationChanged","Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-                locationView.setText("Lon : "+location.getLongitude()+", Lat : "+location.getLatitude());
+                Log.d("onLocationChanged", "Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+                locationView.setText("Lon : " + location.getLongitude() + ", Lat : " + location.getLatitude());
 
             }
 
@@ -519,8 +578,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         /* 퍼미션 설정 끝 */
 
         /*
-        * 건물 및 마커정보 표출 시작
-        * */
+         * 건물 및 마커정보 표출 시작
+         * */
         // Build a renderable from a 2D View.
         CompletableFuture<ViewRenderable> popupLayout =
                 ViewRenderable.builder()
@@ -530,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // When you build a Renderable, Sceneform loads its resources in the background while returning
         // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
         CompletableFuture<ModelRenderable> andy = ModelRenderable.builder()
-                .setSource(this,R.raw.andy)
+                .setSource(this, R.raw.andy)
                 .build();
 
         CompletableFuture.allOf(popupLayout, andy)
@@ -540,19 +599,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
                             // before calling get().
 
-                            if(throwable != null) {
-                                DemoUtils.displayError(this, "Unalbe to load renderables",throwable);
+                            if (throwable != null) {
+                                DemoUtils.displayError(this, "Unalbe to load renderables", throwable);
                                 return null;
                             }
 
                             try {
                                 popupLayoutRenderable = popupLayout.get();
-                                Log.e("try success","complete get popupLayout");
+                                Log.e("try success", "complete get popupLayout");
                                 //andyRenderable = andy.get();
                                 hasFinishedLoading = true;
 
-                            }catch (InterruptedException | ExecutionException ex){
-                                Log.e("error","Unable to load renderables");
+                            } catch (InterruptedException | ExecutionException ex) {
+                                Log.e("error", "Unable to load renderables");
                                 DemoUtils.displayError(this, "Unable to load renderables", ex);
                             }
 
@@ -567,7 +626,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnUpdateListener(
                         frameTime -> {
 
-                            if(!hasFinishedLoading){
+                            if (!hasFinishedLoading) {
                                 return;
                             }
 
@@ -640,12 +699,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
 
 
-                });
+                        });
         // Lastly request CAMERA & fine location permission which is required by ARCore-Location.
         ARLocationPermissionHelper.requestPermission(this);
         /*
-        * 건물 및 마커정보 끝
-        * */
+         * 건물 및 마커정보 끝
+         * */
 
     }
     /* OnCreate End */
@@ -693,7 +752,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /* 지도 끝 */
 
 
-
     /* 파일 저장 시작 */
     private void takePhoto() {
         final String filename = generateFilename();
@@ -725,7 +783,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         */
 
 
-                        ConstraintLayout fContainer = (ConstraintLayout)findViewById(R.id.masterLayout);
+                        ConstraintLayout fContainer = (ConstraintLayout) findViewById(R.id.masterLayout);
                         fContainer.buildDrawingCache();
                         Bitmap fContainerLayoutView = fContainer.getDrawingCache();
 
@@ -764,6 +822,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }, new Handler(handlerThread.getLooper()));
         }
     }
+
     private void saveBitmapToDisk(Bitmap bitmap, String filename) throws IOException {
 
         File out = new File(filename);
@@ -780,6 +839,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             throw new IOException("Failed to save bitmap to disk", ex);
         }
     }
+
     private String generateFilename() {
         String date =
                 null;
@@ -789,6 +849,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM) + File.separator + "Screenshots/" + date + "_screenshot.jpg";
     }
+
     public static Bitmap mergeToPin(Bitmap back, Bitmap front) {
         Bitmap result = Bitmap.createBitmap(back.getWidth(), back.getHeight(), back.getConfig());
         Canvas canvas = new Canvas(result);
@@ -814,27 +875,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         try {
             for (int i = 0; i < mApps.size(); i++) {
-                if(mApps.get(i).activityInfo.packageName.startsWith("kr.or.kcsc.android.application")){
+                if (mApps.get(i).activityInfo.packageName.startsWith("kr.or.kcsc.android.application")) {
                     isExist = true;
                     break;
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             isExist = false;
         }
         return isExist;
     }
 
-    public void callLx(){
+    public void callLx() {
         boolean isExist = false;
         isExist = getPackageList();
 
-        if(isExist){
+        if (isExist) {
             Intent intent = getPackageManager().getLaunchIntentForPackage("kr.or.kcsc.android.application");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        }else if(!isExist){
+        } else if (!isExist) {
             String url = "market://details?id=" + "kr.or.kcsc.android.application";
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(i);
@@ -999,7 +1059,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addLineBetweenPoints(Scene scene, Pose fromPose, Pose toPose) {
 
         // If you call without fucking anchor you never do anything. asshole.
-        if(fromPose == null || toPose == null) {
+        if (fromPose == null || toPose == null) {
             return;
         }
 
