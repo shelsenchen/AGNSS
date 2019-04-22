@@ -62,3 +62,8 @@ sceneform.asset('sampledata/YoungSanPointOut_0.fbx',
         'default',
         'sampledata/YoungSanPointOut_0.sfa',
         'src/main/assets/YoungSanPointOut_0')
+
+sceneform.asset('sampledata/JeonJuBuildingInterpolate_0.fbx',
+        'default',
+        'sampledata/JeonJuBuildingInterpolate_0.sfa',
+        'src/main/assets/JeonJuBuildingInterpolate_0')
