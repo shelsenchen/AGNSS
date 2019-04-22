@@ -67,3 +67,8 @@ sceneform.asset('sampledata/JeonJuBuildingInterpolate_0.fbx',
         'default',
         'sampledata/JeonJuBuildingInterpolate_0.sfa',
         'src/main/assets/JeonJuBuildingInterpolate_0')
+
+sceneform.asset('sampledata/JeonJuBuildPointOutInterpolate_0.fbx',
+        'default',
+        'sampledata/JeonJuBuildPointOutInterpolate_0.sfa',
+        'src/main/assets/JeonJuBuildPointOutInterpolate_0')
