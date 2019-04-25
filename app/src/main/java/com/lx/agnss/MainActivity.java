@@ -366,6 +366,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         distIcon.select();
                     }
 
+
+
+
+
+
                     //용산 건물
                     if (mrYongSanBuildingDEM != null && boolYongSanBuildingDEM == true) {
                         Anchor makeAnchor = hitResult.createAnchor();
