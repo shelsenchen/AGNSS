@@ -1,4 +1,26 @@
 <resources>
     <string name="app_name">AGNSS</string>
     <string name="google_maps_api_key">AIzaSyDFIvA8d4BKkrjXj_WYd_EDPFdxkOS4ww8</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">LX공사</string>
+    <string name="nav_header_subtitle">A-GNSS 위치 정확도 및 영상기반 실시간 영상 지오코딩 기술 개발을 통한 증강현실 기반 지적정보 표출 연구</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+
+    <string name="menu_jeonju">전주</string>
+    <string name="menu_yongsan">용산</string>
+
+    <string name="nav_jeonju_pointout">지적</string>
+    <string name="nav_jeonju_building">건물</string>
+    <string name="nav_jeonju_axis">기준점</string>
+
 </resources>

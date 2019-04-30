@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 
 import android.graphics.Canvas;
+import android.graphics.ColorSpace;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,7 +33,13 @@ import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -154,13 +161,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION_ = 1002;
     final int PERMISSION = 1;
 
+    //Left slide menu
+    ListView listView = null;
 
+
+    /** Slide information */
+    //슬라이드 열기/닫기 플래그
+    boolean isPageOpen = false;
+    //슬라이드 열기 애니메이션
+    Animation translateLeftAnim;
+    //슬라이드 닫기 애니메이션
+    Animation translateRightAnim;
+    //슬라이드 레이아웃
+    LinearLayout slidingPage01;
+
+    Button button1;
+
+    /** on create */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //test update
+        /** s:slide layout */
+        //UI
+        slidingPage01 = (LinearLayout)findViewById(R.id.slidingPage01);
+        button1 = (Button)findViewById(R.id.buton1);
+
+        //애니메이션
+        translateLeftAnim = AnimationUtils.loadAnimation(this, R.anim.translate_left);
+        translateRightAnim = AnimationUtils.loadAnimation(this, R.anim.translate_right);
+
+        //애니메이션 리스너 설정
+        SlidingPageAnimationListener animationListener = new SlidingPageAnimationListener();
+        translateLeftAnim.setAnimationListener(animationListener);
+        translateRightAnim.setAnimationListener(animationListener);
+
+        /** e:slide layout */
+
 
         /* Reqeust Permission */
         if (Build.VERSION.SDK_INT >= 23 &&
@@ -550,6 +588,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        Button buttonLeftMenu = (Button) findViewById(R.id.btnLeftMenuOpen) ;
+        buttonLeftMenu.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.leftDrawer) ;
+                if (!drawer.isDrawerOpen(Gravity.LEFT)) {
+                    drawer.openDrawer(Gravity.LEFT) ;
+                }
+            }
+        });
+
+
+
         /*
          ***   메뉴버튼 이벤트 처리 끝   ***
          */
@@ -727,6 +778,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
          * 건물 및 마커정보 끝
          * */
 
+        // Left slide menu
+        final String[] items = {"White", "Red", "Green", "Blue", "Blaick"};
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, items);
+
+        listView = (ListView)findViewById(R.id.leftMenuList);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView contentTextView = (TextView)findViewById(R.id.leftMenu);
+
+                switch(position) {
+                    case 0:
+//                        contentTextView.setBackgroundColor(new ColorSpace.Rgb(0b1, 0b1, 0b1));
+//                        contentTextView.setTextColor(Color.rgb(0x00,0x00,0x00));
+//                        contentTextView.setText("White");
+                    case 1:
+//                        contentTextView.setBackgroundColor(Color.rgb(0xFF, 0x00, 0x00));
+//                        contentTextView.setTextColor(Color.rgb(0xFF,0xFF,0xFF));
+//                        contentTextView.setText("White");
+                    case 2:
+//                        contentTextView.setBackgroundColor(Color.rgb(0x00, 0xFF, 0x00));
+//                        contentTextView.setTextColor(Color.rgb(0x00,0x00,0x00));
+//                        contentTextView.setText("White");
+                    case 3:
+//                        contentTextView.setBackgroundColor(Color.rgb(0x00, 0x00, 0xFF));
+//                        contentTextView.setTextColor(Color.rgb(0xFF,0xFF,0xFF));
+//                        contentTextView.setText("White");
+                    case 4:
+//                        contentTextView.setBackgroundColor(Color.rgb(0x00, 0x00, 0x00));
+//                        contentTextView.setTextColor(Color.rgb(0xFF,0xFF,0xFF));
+//                        contentTextView.setText("White");
+                }
+            }
+        });
     }
     /* OnCreate End */
 
@@ -1172,5 +1261,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         node.setParent(anchorNode);
         fragment.getArSceneView().getScene().addChild(anchorNode);
         node.select();
+    }
+
+    //버튼
+    public void onButton1Clicked(View v){
+        //닫기
+        if(isPageOpen){
+            //애니메이션 시작
+            slidingPage01.startAnimation(translateRightAnim);
+        }
+        //열기
+        else{
+            slidingPage01.setVisibility(View.VISIBLE);
+            slidingPage01.startAnimation(translateLeftAnim);
+        }
+    }
+
+    //애니메이션 리스너
+    private class SlidingPageAnimationListener implements Animation.AnimationListener {
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            //슬라이드 열기->닫기
+            if(isPageOpen){
+                slidingPage01.setVisibility(View.INVISIBLE);
+                button1.setText("Open");
+                isPageOpen = false;
+            }
+            //슬라이드 닫기->열기
+            else{
+                button1.setText("Close");
+                isPageOpen = true;
+            }
+        }
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_jeonju"
+            android:icon="@drawable/ic_coordnate_w"
+            android:title="@string/menu_jeonju" />
+        <item
+            android:id="@+id/menu_yongsan"
+            android:icon="@drawable/ic_coordnate_w"
+            android:title="@string/menu_yongsan" />
+    </group>
+
+    <item android:title="A-GNSS">
+        <menu>
+            <item
+                android:id="@+id/nav_point_out"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/nav_jeonju_pointout" />
+            <item
+                android:id="@+id/nav_building"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/nav_jeonju_building" />
+            <item
+                android:id="@+id/nav_point"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/nav_jeonju_axis" />
+        </menu>
+    </item>
+
+</menu>
