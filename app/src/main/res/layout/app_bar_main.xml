@@ -21,6 +21,8 @@
 
     </android.support.design.widget.AppBarLayout>
 -->
+    <!--Custom Toolbar-->
+    <include layout="@layout/toolbar" />
 
     /** This line containing another layout from the outside. */
     <include layout="@layout/content_main" />

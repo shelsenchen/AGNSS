@@ -20,17 +20,21 @@ import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
@@ -96,10 +100,12 @@ import uk.co.appoly.arcorelocation.rendering.LocationNode;
 import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
 import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
 
+import static com.lx.agnss.R.id.nav_view;
+
 /**
  * This class for the main activity job.
  */
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private boolean installRequested;
     private boolean hasFinishedLoading = false;
@@ -179,23 +185,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     Button button1;
 
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    ActionBarDrawerToggle drawerToggle;
+    Toolbar toolbar;
+
+
     /** on create */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
+        /** Initialization Layout */
+        initLayout();
 
         /** s:slide layout */
         //UI
@@ -1291,6 +1294,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_jeonju:
+                Toast.makeText(this, "item1 clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.menu_yongsan:
+                Toast.makeText(this, "item2 clicked..", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return false;    }
+
     //애니메이션 리스너
     private class SlidingPageAnimationListener implements Animation.AnimationListener {
         @Override
@@ -1316,4 +1333,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     }
+
+    private void initLayout() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu_white_24dp);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.masterLayout);
+        navigationView = (NavigationView) findViewById(nav_view);
+//        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.drawer_open,
+                R.string.drawer_close
+        );
+        drawerLayout.addDrawerListener(drawerToggle);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
 }

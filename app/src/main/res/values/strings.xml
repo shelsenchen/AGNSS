@@ -38,6 +38,7 @@
     <string name="nav_itm_building_jeonju">전주건물</string>
     <string name="nav_itm_axis_jeonju">전주기준점</string>
 
-
+    <string name="drawer_open">drawer_open</string>
+    <string name="drawer_close">drawer_close</string>
 
 </resources>
