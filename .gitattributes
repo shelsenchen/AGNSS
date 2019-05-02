@@ -1,0 +1,4 @@
+*.sfb filter=lfs diff=lfs merge=lfs -text
+*.sfx filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.sfa filter=lfs diff=lfs merge=lfs -text

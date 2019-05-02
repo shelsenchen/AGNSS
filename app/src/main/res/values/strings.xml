@@ -19,8 +19,25 @@
     <string name="menu_jeonju">전주</string>
     <string name="menu_yongsan">용산</string>
 
-    <string name="nav_jeonju_pointout">지적</string>
-    <string name="nav_jeonju_building">건물</string>
-    <string name="nav_jeonju_axis">기준점</string>
+    <string name="nav_itm_marker_pointing">마커측점</string>
+    <string name="nav_itm_current_coordinates">좌표측정</string>
+    <string name="nav_itm_measure_distance">거리측정</string>
+    <string name="nav_itm_screen_capture">화면캡쳐</string>
+    <string name="nav_itm_lx_app">토지알림e</string>
+    <string name="nav_itm_gps_frequency">GPS Frequency</string>
+
+    <string name="nav_itm_point_out">지적</string>
+    <string name="nav_itm_building">건물</string>
+    <string name="nav_itm_axis">기준점</string>
+
+    <string name="nav_itm_point_out_yongsan">용산지적</string>
+    <string name="nav_itm_building_yongsan">용산건물</string>
+    <string name="nav_itm_axis_yongsan">용산기준점</string>
+
+    <string name="nav_itm_point_out_jeonju">전주지적</string>
+    <string name="nav_itm_building_jeonju">전주건물</string>
+    <string name="nav_itm_axis_jeonju">전주기준점</string>
+
+
 
 </resources>

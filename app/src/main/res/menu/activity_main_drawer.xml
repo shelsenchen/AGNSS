@@ -14,20 +14,83 @@
             android:title="@string/menu_yongsan" />
     </group>
 
-    <item android:title="A-GNSS">
+    <item android:title="파일럿 기능(용산)">
         <menu>
             <item
-                android:id="@+id/nav_point_out"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/nav_jeonju_pointout" />
+                android:id="@+id/nav_itm_point_out_yongsan"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_point_out_yongsan" />
             <item
-                android:id="@+id/nav_building"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/nav_jeonju_building" />
+                android:id="@+id/nav_itm_building_yongsan"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_building_yongsan" />
             <item
-                android:id="@+id/nav_point"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/nav_jeonju_axis" />
+                android:id="@+id/nav_itm_axis_yongsan"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_axis_yongsan" />
+        </menu>
+    </item>
+
+    <item android:title="파일럿 기능(전주)">
+        <menu>
+            <item
+                android:id="@+id/nav_itm_point_out_jeonju"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_point_out_jeonju" />
+            <item
+                android:id="@+id/nav_itm_building_jeonju"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_building_jeonju" />
+            <item
+                android:id="@+id/nav_itm_axis_jeonju"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_axis_jeonju" />
+        </menu>
+    </item>
+
+    <item android:title="지적기능">
+        <menu>
+            <item
+                android:id="@+id/nav_itm_point_out"
+                android:icon="@drawable/ic_land_w"
+                android:title="@string/nav_itm_point_out" />
+            <item
+                android:id="@+id/nav_itm_building"
+                android:icon="@drawable/ic_building_w"
+                android:title="@string/nav_itm_building" />
+            <item
+                android:id="@+id/nav_itm_axis"
+                android:icon="@drawable/ic_land_w"
+                android:title="@string/nav_itm_axis" />
+        </menu>
+    </item>
+
+    <item android:title="공통기능">
+        <menu>
+            <item
+                android:id="@+id/nav_itm_marker_pointing"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_marker_pointing" />
+            <item
+                android:id="@+id/nav_itm_current_coordinates"
+                android:icon="@drawable/ic_coordnate_w"
+                android:title="@string/nav_itm_current_coordinates" />
+            <item
+                android:id="@+id/nav_itm_measure_distance"
+                android:icon="@drawable/ic_distance_w"
+                android:title="@string/nav_itm_measure_distance" />
+            <item
+                android:id="@+id/nav_itm_screen_capture"
+                android:icon="@drawable/ic_screenshot_w"
+                android:title="@string/nav_itm_screen_capture" />
+            <item
+                android:id="@+id/nav_itm_lx_app"
+                android:icon="@drawable/ic_link_w"
+                android:title="@string/nav_itm_lx_app" />
+            <item
+                android:id="@+id/nav_itm_gps_frequency"
+                android:icon="@drawable/ic_menu_gps_frequency"
+                android:title="@string/nav_itm_gps_frequency" />
         </menu>
     </item>
 
