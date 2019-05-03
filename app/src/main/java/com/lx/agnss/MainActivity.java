@@ -22,6 +22,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -531,6 +532,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
                 placeObject(arFragment, anchor, Uri.parse("YoungSanPointOut_0.sfb"));
+            }
+        });
+
+        Button buttonOpen = (Button) findViewById(R.id.open) ;
+        buttonOpen.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer) ;
+                if (!drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.openDrawer(Gravity.RIGHT) ;
+                }
+            }
+        });
+        Button buttonClose = (Button) findViewById(R.id.close) ;
+        buttonClose.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer) ;
+                if (drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.closeDrawer(Gravity.RIGHT) ;
+                }
             }
         });
 
