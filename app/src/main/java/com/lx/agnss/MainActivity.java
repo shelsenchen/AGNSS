@@ -366,11 +366,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         distIcon.select();
                     }
 
-
-
-
-
-
                     //용산 건물
                     if (mrYongSanBuildingDEM != null && boolYongSanBuildingDEM == true) {
                         Anchor makeAnchor = hitResult.createAnchor();
@@ -504,11 +499,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Scene scene = arFragment.getArSceneView().getScene();
                 Quaternion camQ = scene.getCamera().getWorldRotation();
 
-                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-                Pose anchorPose = new Pose(f1, f2);
+//                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+//                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+//                Pose anchorPose = new Pose(f1, f2);
+//
+//                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
-                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+                float[] translation = new float[]{0f, -1f, 3f};
+                float[] rotation = new float[]{0f, 0f, 0f, 0f};
+                Pose testPose = new Pose(translation, rotation);
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(testPose);
 
                 placeObject(arFragment, anchor, Uri.parse("YoungSanBuildingDEM_0.sfb"));
             }
