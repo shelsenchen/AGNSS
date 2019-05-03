@@ -1,6 +1,7 @@
 package com.lx.agnss;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -173,7 +174,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ListView listView = null;
 
 
-    /** Slide information */
+    /**
+     * Slide information
+     */
     //슬라이드 열기/닫기 플래그
     boolean isPageOpen = false;
     //슬라이드 열기 애니메이션
@@ -185,13 +188,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     Button button1;
 
+    /**
+     * Navigation drawer
+     */
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
     Toolbar toolbar;
 
 
-    /** on create */
+    /**
+     * on create
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -200,10 +208,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         /** Initialization Layout */
         initLayout();
 
+
         /** s:slide layout */
         //UI
-        slidingPage01 = (LinearLayout)findViewById(R.id.slidingPage01);
-        button1 = (Button)findViewById(R.id.buton1);
+        slidingPage01 = (LinearLayout) findViewById(R.id.slidingPage01);
+        button1 = (Button) findViewById(R.id.buton1);
 
         //애니메이션
         translateLeftAnim = AnimationUtils.loadAnimation(this, R.anim.translate_left);
@@ -584,34 +593,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        Button buttonOpen = (Button) findViewById(R.id.open) ;
+        Button buttonOpen = (Button) findViewById(R.id.open);
         buttonOpen.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer) ;
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer);
                 if (!drawer.isDrawerOpen(Gravity.RIGHT)) {
-                    drawer.openDrawer(Gravity.RIGHT) ;
+                    drawer.openDrawer(Gravity.RIGHT);
                 }
             }
         });
-        Button buttonClose = (Button) findViewById(R.id.close) ;
+        Button buttonClose = (Button) findViewById(R.id.close);
         buttonClose.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer) ;
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer);
                 if (drawer.isDrawerOpen(Gravity.RIGHT)) {
-                    drawer.closeDrawer(Gravity.RIGHT) ;
+                    drawer.closeDrawer(Gravity.RIGHT);
                 }
             }
         });
 
-        Button buttonLeftMenu = (Button) findViewById(R.id.btnLeftMenuOpen) ;
+        Button buttonLeftMenu = (Button) findViewById(R.id.btnLeftMenuOpen);
         buttonLeftMenu.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.leftDrawer) ;
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.leftDrawer);
                 if (!drawer.isDrawerOpen(Gravity.LEFT)) {
-                    drawer.openDrawer(Gravity.LEFT) ;
+                    drawer.openDrawer(Gravity.LEFT);
                 }
             }
         });
@@ -799,7 +808,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         final String[] items = {"White", "Red", "Green", "Blue", "Blaick"};
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, items);
 
-        listView = (ListView)findViewById(R.id.leftMenuList);
+        listView = (ListView) findViewById(R.id.leftMenuList);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -807,9 +816,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                TextView contentTextView = (TextView)findViewById(R.id.leftMenu);
+                TextView contentTextView = (TextView) findViewById(R.id.leftMenu);
 
-                switch(position) {
+                switch (position) {
                     case 0:
 //                        contentTextView.setBackgroundColor(new ColorSpace.Rgb(0b1, 0b1, 0b1));
 //                        contentTextView.setTextColor(Color.rgb(0x00,0x00,0x00));
@@ -850,6 +859,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         //mapView.onSaveInstanceState(mapViewBundle);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -1145,6 +1155,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     *  Represent the message while it searching a sufface.
+     */
     private void showLoadingMessage() {
         if (loadingMessageSnackbar != null && loadingMessageSnackbar.isShownOrQueued()) {
             return;
@@ -1159,6 +1172,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         loadingMessageSnackbar.show();
     }
 
+    /**
+     * Hide the message when it figured out a surffce.
+     */
     private void hideLoadingMessage() {
         if (loadingMessageSnackbar == null) {
             return;
@@ -1183,6 +1199,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    /**
+     * Draw a line in AR view.
+     * @param scene
+     * @param fromPose
+     * @param toPose
+     */
     private void addLineBetweenPoints(Scene scene, Pose fromPose, Pose toPose) {
 
         // If you call without fucking anchor you never do anything. asshole.
@@ -1280,23 +1302,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         node.select();
     }
 
-    //버튼
-    public void onButton1Clicked(View v){
+    /**
+     * 버튼
+     * @param v
+     */
+    public void onButton1Clicked(View v) {
         //닫기
-        if(isPageOpen){
+        if (isPageOpen) {
             //애니메이션 시작
             slidingPage01.startAnimation(translateRightAnim);
         }
         //열기
-        else{
+        else {
             slidingPage01.setVisibility(View.VISIBLE);
             slidingPage01.startAnimation(translateLeftAnim);
         }
     }
 
+    /**
+     * Navigation menu item click
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_jeonju:
                 Toast.makeText(this, "item1 clicked..", Toast.LENGTH_SHORT).show();
                 break;
@@ -1306,44 +1336,61 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
-        return false;    }
+        return false;
+    }
 
-    //애니메이션 리스너
+    /**
+     * 애니메이션 리스너
+     */
     private class SlidingPageAnimationListener implements Animation.AnimationListener {
         @Override
         public void onAnimationEnd(Animation animation) {
             //슬라이드 열기->닫기
-            if(isPageOpen){
+            if (isPageOpen) {
                 slidingPage01.setVisibility(View.INVISIBLE);
                 button1.setText("Open");
                 isPageOpen = false;
             }
             //슬라이드 닫기->열기
-            else{
+            else {
                 button1.setText("Close");
                 isPageOpen = true;
             }
         }
+
+        /**
+         *
+         * @param animation
+         */
         @Override
         public void onAnimationRepeat(Animation animation) {
 
         }
+
+        /**
+         *
+         * @param animation
+         */
         @Override
         public void onAnimationStart(Animation animation) {
 
         }
     }
 
+    /**
+     * Initialization ground layout
+     */
     private void initLayout() {
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("A-GNSS");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_menu_white_24dp);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        toolbar.setVisibility(View.GONE);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.masterLayout);
         navigationView = (NavigationView) findViewById(nav_view);
-//        navigationView = (NavigationView) findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
@@ -1351,8 +1398,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 R.string.drawer_open,
                 R.string.drawer_close
         );
+
         drawerLayout.addDrawerListener(drawerToggle);
         navigationView.setNavigationItemSelectedListener(this);
+
+        /** Left floating button for toggling menu view */
+        FloatingActionButton flobtnLeftFloating = findViewById(R.id.flobtnLeftFloating);
+        flobtnLeftFloating.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Toggle left side menu
+                Toast.makeText(getApplicationContext(), "Left Slide", Toast.LENGTH_SHORT).show();
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        /** Right floating button for toggling info view*/
+        FloatingActionButton flobtnRightFloating = findViewById(R.id.flobtnRightFloating);
+        flobtnRightFloating.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Right floating", Toast.LENGTH_SHORT).show();
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer);
+                if (!drawer.isDrawerOpen(Gravity.RIGHT)) {
+                    drawer.openDrawer(Gravity.RIGHT);
+                }
+            }
+        });
     }
 
 }

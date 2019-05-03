@@ -32,11 +32,12 @@
     </LinearLayout>-->
 
 
-    <!-- What for -->
+    <!-- AR Scene -->
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
         <fragment
             android:id="@+id/ux_fragment"
@@ -127,6 +128,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
         >
 
         <fragment
@@ -154,7 +156,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="w,1:1"
         app:layout_constraintVertical_chainStyle="spread"
-        app:layout_constraintVertical_weight="1">
+        app:layout_constraintVertical_weight="1"
+        >
 
         <LinearLayout
             android:id="@+id/menuLayout"
