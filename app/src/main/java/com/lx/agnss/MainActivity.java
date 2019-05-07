@@ -506,9 +506,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //
 //                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
+                //************ test: Construct pose ************
                 float[] translation = new float[]{0f, -1f, 3f};
-                float[] rotation = new float[]{0f, 0f, 0f, 0f};
+                float[] rotation = new float[]{1f, 0f, 0f, 0f};
                 Pose testPose = new Pose(translation, rotation);
+
+                float[] testModelMatrix = new float[16];
+                testPose.toMatrix(testModelMatrix, 0);
+                //  1  0  0  0
+                //  0 -1  0  -1
+                //  0  1  0  3
+                //  0  0  0  1
+                // No scale information
+                //*********************************************
 
                 Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(testPose);
 
