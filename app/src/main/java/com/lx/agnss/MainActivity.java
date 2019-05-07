@@ -1119,7 +1119,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         if (startPose == null) {
                             startPose = hitResult.getHitPose();
-                            distanceView.setText("두번째 지점을 선택해 주세요");
+                            //distanceView.setText("두번째 지점을 선택해 주세요");
+                            Toast.makeText(getApplicationContext(), "두번째 지점을 선택해 주세요", Toast.LENGTH_SHORT).show();
                         } else if (startPose != null) {
                             endPose = hitResult.getHitPose();
                             addLineBetweenPoints(arFragment.getArSceneView().getScene(), startPose, endPose);
@@ -1130,9 +1131,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             startPose = null;
 
-                            distanceView.setText("거리 : " + String.format("%.2f", distanceM) + "m");
-
-
+                            //distanceView.setText("거리 : " + String.format("%.2f", distanceM) + "m");
+                            Toast.makeText(getApplicationContext(), "거리 : " + String.format("%.2f", distanceM) + "m", Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -1195,13 +1195,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             boolMeasureDistOnOff = false;
             //btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_off));
             distanceView.setVisibility(View.INVISIBLE);
-            distanceView.setText("");
+            distanceView.setText("거리 측정을 종료합니다.");
             onClear();
         } else if (!boolMeasureDistOnOff) {
             boolMeasureDistOnOff = true;
             //btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_on));
-            distanceView.setVisibility(View.VISIBLE);
-            distanceView.setText("첫번째 지점을 선택해 주세요");
+            //distanceView.setVisibility(View.VISIBLE);
+            //distanceView.setText("첫번째 지점을 선택해 주세요");
+            Toast.makeText(getApplicationContext(), "첫번째 지점을 선택해 주세요", Toast.LENGTH_SHORT).show();
         }
         //Toast.makeText(getApplicationContext(), "버튼3(거리측정) 클릭",Toast.LENGTH_SHORT).show();
     }
