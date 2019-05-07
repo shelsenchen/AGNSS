@@ -864,7 +864,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case R.id.nav_itm_point_out_jeonju:
                 Toast.makeText(this, "Jeon-ju point out clicked..", Toast.LENGTH_SHORT).show();
-                displayYongSanPointOut();
+                displayJeonJuPointOut();
                 break;
             case R.id.nav_itm_building_jeonju:
                 Toast.makeText(this, "Jeon-ju building clicked..", Toast.LENGTH_SHORT).show();
@@ -1222,7 +1222,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
-        placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
+        placeObject(arFragment, anchor, Uri.parse("JeonJuBuildingInterpolate_0.sfb"));
     }
 
     /**
@@ -1240,7 +1240,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
 
-        placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
+        placeObject(arFragment, anchor, Uri.parse("JeonJuBuildPointOutInterpolate_0.sfb"));
     }
 
     /**
