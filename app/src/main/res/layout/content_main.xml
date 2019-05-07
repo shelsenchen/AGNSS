@@ -8,30 +8,6 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <!-- 슬라이드 레이아웃 -->
-<!--    <LinearLayout
-        android:id="@+id/slidingPage01"
-        android:orientation="vertical"
-        android:background="#5F00FF"
-        android:visibility="gone"
-        android:layout_gravity="right"
-        android:layout_width="200dp"
-        android:layout_height="match_parent">
-        <TextView
-            android:text="Slide Contents"
-            android:textColor="#000"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:text="Slide Contents"
-            android:textColor="#000"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>-->
-
-
     <!-- AR Scene -->
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer"
@@ -87,9 +63,6 @@
 
     </android.support.v4.widget.DrawerLayout>
 
-    <!-- Information layout which comes out from left -->
-
-
     <!-- Map layout -->
     <FrameLayout
         android:id="@+id/mapLayout"
@@ -99,7 +72,6 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
         >
 
         <fragment
@@ -116,193 +88,6 @@
             android:src="@drawable/ic_map_gb_box" />
 
     </FrameLayout>
-
-    <!-- AR Buttons -->
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#88ffffff"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="w,1:1"
-        app:layout_constraintVertical_chainStyle="spread"
-        app:layout_constraintVertical_weight="1"
-        >
-
-        <LinearLayout
-            android:id="@+id/menuLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp">
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnMenu01"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="마커&#10;측점"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_marker_w"
-                android:drawableStart="@drawable/ic_marker_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnMenu02"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="좌표&#10;측정"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_coordnate_w"
-                android:drawableStart="@drawable/ic_coordnate_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnMenu03"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="거리&#10;측정"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_distance_w"
-                android:drawableStart="@drawable/ic_distance_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnMenu04"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="화면&#10;캡쳐"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_screenshot_w"
-                android:drawableStart="@drawable/ic_screenshot_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnMenu05"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="토지&#10;알림e"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_link_w"
-                android:drawableStart="@drawable/ic_link_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnJeonJuBuildingDEM_0"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="전주&#10;건물"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_building_w"
-                android:drawableStart="@drawable/ic_building_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnJeonJuPointOut_0"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="전주&#10;지적"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_land_w"
-                android:drawableStart="@drawable/ic_land_w"
-                />
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnYoungSanBuildingDEM_0"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="용산&#10;건물"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_building_w"
-                android:drawableStart="@drawable/ic_building_w"
-                />
-
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnYoungSanPointOut_0"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="용산&#10;지적"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_land_w"
-                android:drawableStart="@drawable/ic_land_w"
-                />
-
-            <!--
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/open"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="열기&#10;"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_land_w"
-                android:drawableStart="@drawable/ic_land_w"
-                />
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/close"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="닫기&#10;"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_land_w"
-                android:drawableStart="@drawable/ic_land_w"
-                />
-            -->
-
-        </LinearLayout>
-
-
-    </LinearLayout>
 
     <!-- Information layout which comes out from right -->
     <LinearLayout

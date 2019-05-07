@@ -39,8 +39,6 @@ import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -130,24 +128,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean boolYongSanBuildingDEM = false;
     private boolean boolYongSanPointOut = false;
 
-    //메뉴버튼
-    private Button btnMenu01; // Marker
-    private Button btnMenu02; // Take a coordinate
-    private Button btnMenu03; // Measure distance between an anchor and another one
-    private Button btnMenu04; // Take a screen shot
-    private Button btnMenu05; // Open LX App
-    private boolean chkDist = false;
-
-    // 지적 건물 표출용 임시 버튼
-    private Button btnJeonJuBuildingDEM;
-    private Button btnJeonJuPointOut;
-    private Button btnYongSanBuildingDEM;
-    private Button btnYongSanPointOut;
-
     private TextView locationView; // This view shown a coordinate
     private TextView distanceView; // This view shown a distance
 
     // 거리측정용 변수 선언
+    private boolean boolMeasureDistOnOff = false;
     private Pose startPose = null;
     private Pose endPose = null;
     private Anchor distanceAnchor;
@@ -206,144 +191,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Make an instance for AR and listner
         initAR();
 
-        // Marker
-        btnMenu01.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 마커측점
-                Toast.makeText(getApplicationContext(), "버튼1(마커측점) 클릭", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Coordinate
-        btnMenu02.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 좌표측정
-                Toast.makeText(getApplicationContext(), "버튼2(좌표측정) 클릭", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Measure distance between an anchor and another one
-        btnMenu03.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 거리측정
-                if (chkDist) {
-                    chkDist = false;
-                    btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_off));
-                    distanceView.setVisibility(View.INVISIBLE);
-                    distanceView.setText("");
-                    onClear();
-                } else if (!chkDist) {
-                    chkDist = true;
-                    btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_on));
-                    distanceView.setVisibility(View.VISIBLE);
-                    distanceView.setText("첫번째 지점을 선택해 주세요");
-                }
-                //Toast.makeText(getApplicationContext(), "버튼3(거리측정) 클릭",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Take a screen shot
-        btnMenu04.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 화면캡쳐
-                //Toast.makeText(getApplicationContext(), "버튼4(화면캡쳐) 클릭",Toast.LENGTH_SHORT).show();
-                takePhoto();
-            }
-        });
-
-        // Open LX App
-        btnMenu05.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // LX토지알림e 연동
-                callLx();
-                //Toast.makeText(getApplicationContext(), "버튼5(LX토지알림e 연동) 클릭",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Jeon-ju building
-        btnJeonJuBuildingDEM.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                onClear();
-
-                Scene scene = arFragment.getArSceneView().getScene();
-                Quaternion camQ = scene.getCamera().getWorldRotation();
-
-                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-                Pose anchorPose = new Pose(f1, f2);
-
-                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-                placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
-
-            }
-        });
-
-        btnJeonJuPointOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                onClear();
-
-                Scene scene = arFragment.getArSceneView().getScene();
-                Quaternion camQ = scene.getCamera().getWorldRotation();
-
-                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-                Pose anchorPose = new Pose(f1, f2);
-
-                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-                placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
-            }
-        });
-
-        btnYongSanBuildingDEM.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                onClear();
-
-                Scene scene = arFragment.getArSceneView().getScene();
-                Quaternion camQ = scene.getCamera().getWorldRotation();
-
-                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-                Pose anchorPose = new Pose(f1, f2);
-
-                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-                placeObject(arFragment, anchor, Uri.parse("YoungSanBuildingDEM_0.sfb"));
-            }
-        });
-
-        // Yong-san point out
-        btnYongSanPointOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                onClear();
-
-                Scene scene = arFragment.getArSceneView().getScene();
-                Quaternion camQ = scene.getCamera().getWorldRotation();
-
-                float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-                float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-                Pose anchorPose = new Pose(f1, f2);
-
-                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-                placeObject(arFragment, anchor, Uri.parse("YoungSanPointOut_0.sfb"));
-            }
-        });
-
         /*
          ***   메뉴버튼 이벤트 처리 끝   ***
          */
@@ -396,47 +243,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         /* 퍼미션 설정 끝 */
 
 
-        /*
-         * 건물 및 마커정보 표출 시작
-         * */
-        // Build a renderable from a 2D View.
-        CompletableFuture<ViewRenderable> popupLayout =
-                ViewRenderable.builder()
-                        .setView(this, R.layout.popup_layout)
-                        .build();
-
-        // When you build a Renderable, Sceneform loads its resources in the background while returning
-        // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
-        CompletableFuture<ModelRenderable> andy = ModelRenderable.builder()
-                .setSource(this, R.raw.andy)
-                .build();
-
-        CompletableFuture.allOf(popupLayout, andy)
-            .handle(
-                (notUsed, throwable) -> {
-                    // When you build a Renderable, Sceneform loads its resources in the background while
-                    // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
-                    // before calling get().
-
-                    if (throwable != null) {
-                        DemoUtils.displayError(this, "Unalbe to load renderables", throwable);
-                        return null;
-                    }
-
-                    try {
-                        popupLayoutRenderable = popupLayout.get();
-                        Log.e("try success", "complete get popupLayout");
-                        //andyRenderable = andy.get();
-                        hasFinishedLoading = true;
-
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Log.e("error", "Unable to load renderables");
-                        DemoUtils.displayError(this, "Unable to load renderables", ex);
-                    }
-
-                    return null;
-                }
-            );
+        displayBuildingPannel();
 
         // Set an update listener on the Scene that will hide the loading message once a Plane is
         // detected.
@@ -516,8 +323,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                         }
                     }
-
-
                 });
 
         // Lastly request CAMERA & fine location permission which is required by ARCore-Location.
@@ -635,9 +440,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     });
                     snackbar.show();
                 } else {
-                    Toast toast = Toast.makeText(this,
-                            "Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG);
-                    toast.show();
+                    Toast.makeText(this,"Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG).show();
                 }
                 handlerThread.quitSafely();
             }, new Handler(handlerThread.getLooper()));
@@ -682,7 +485,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Save file
+     * Merge bitmap between
      * @param back
      * @param front
      * @return
@@ -700,15 +503,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *  외부 어플리케이션 실행 시작
+     *  Find a LX app from the package manager
      */
     public boolean getPackageList() {
+
+        PackageManager pkgMgr;
         boolean isExist = false;
 
-        PackageManager pkgMgr = getPackageManager();
-        List<ResolveInfo> mApps;
+        pkgMgr = getPackageManager();
+
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> mApps;
         mApps = pkgMgr.queryIntentActivities(mainIntent, 0);
 
         try {
@@ -725,17 +532,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * 외부 어플리케이션 실행 End
+     * Call the LX App
      */
     public void callLx() {
-        boolean isExist = false;
-        isExist = getPackageList();
 
-        if (isExist) {
+        if ( getPackageList() ) {
             Intent intent = getPackageManager().getLaunchIntentForPackage("kr.or.kcsc.android.application");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        } else if (!isExist) {
+        } else {
             String url = "market://details?id=" + "kr.or.kcsc.android.application";
             Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(i);
@@ -744,7 +549,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Example node of a layout
-     *
      * @return
      */
     private Node getExampleView() {
@@ -879,13 +683,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        loadingMessageSnackbar =
-                Snackbar.make(
-                        MainActivity.this.findViewById(android.R.id.content),
-                        "서페이스 탐색중입니다",
-                        Snackbar.LENGTH_INDEFINITE);
-        loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);
-        loadingMessageSnackbar.show();
+//        loadingMessageSnackbar =
+//                Snackbar.make(
+//                        MainActivity.this.findViewById(android.R.id.content),
+//                        "서페이스 탐색중입니다",
+//                        Snackbar.LENGTH_INDEFINITE);
+//        loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);
+//        loadingMessageSnackbar.show();
     }
 
     /**
@@ -974,26 +778,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // 1. make a material by the color
         MaterialFactory.makeOpaqueWithColor(arFragment.getContext(), colorOrange)
-                .thenAccept(material -> {
-                    // 2. make a model by the material
-                    ModelRenderable model = ShapeFactory.makeCylinder(0.0025f, lineLength,
-                            new Vector3(0f, lineLength / 2, 0f), material);
-                    model.setShadowReceiver(false);
-                    model.setShadowCaster(false);
+            .thenAccept(material -> {
+                // 2. make a model by the material
+                ModelRenderable model = ShapeFactory.makeCylinder(0.0025f, lineLength,
+                        new Vector3(0f, lineLength / 2, 0f), material);
+                model.setShadowReceiver(false);
+                model.setShadowCaster(false);
 
-                    // 3. make node
-                    Node node = new Node();
-                    node.setRenderable(model);
-                    node.setParent(anchorNode);
+                // 3. make node
+                Node node = new Node();
+                node.setRenderable(model);
+                node.setParent(anchorNode);
 
-                    // 4. set rotation
-                    final Vector3 difference = Vector3.subtract(to, from);
-                    final Vector3 directionFromTopToBottom = difference.normalized();
-                    final Quaternion rotationFromAToB =
-                            Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
-                    node.setWorldRotation(Quaternion.multiply(rotationFromAToB,
-                            Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 90)));
-                });
+                // 4. set rotation
+                final Vector3 difference = Vector3.subtract(to, from);
+                final Vector3 directionFromTopToBottom = difference.normalized();
+                final Quaternion rotationFromAToB =
+                        Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+                node.setWorldRotation(Quaternion.multiply(rotationFromAToB,
+                        Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 90)));
+            });
     }
 
 
@@ -1033,8 +837,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         node.select();
     }
 
-
-
     /**
      * Navigation menu item click
      * @param item
@@ -1044,11 +846,68 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_jeonju:
-                Toast.makeText(this, "item1 clicked..", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Jeon-ju clicked..", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.menu_yongsan:
-                Toast.makeText(this, "item2 clicked..", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Yong-san clicked..", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.nav_itm_point_out_yongsan:
+                Toast.makeText(this, "Young-san point out clicked..", Toast.LENGTH_SHORT).show();
+                displayYongSanPointOut();
+                break;
+            case R.id.nav_itm_building_yongsan:
+                Toast.makeText(this, "Young-san building clicked..", Toast.LENGTH_SHORT).show();
+                displayYongSanBuilding();
+                break;
+            case R.id.nav_itm_axis_yongsan:
+                Toast.makeText(this, "Young-san Axis out clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_point_out_jeonju:
+                Toast.makeText(this, "Jeon-ju point out clicked..", Toast.LENGTH_SHORT).show();
+                displayYongSanPointOut();
+                break;
+            case R.id.nav_itm_building_jeonju:
+                Toast.makeText(this, "Jeon-ju building clicked..", Toast.LENGTH_SHORT).show();
+                displayJeonjuBuilding();
+                break;
+            case R.id.nav_itm_axis_jeonju:
+                Toast.makeText(this, "Jeon-ju Axis clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_point_out:
+                Toast.makeText(this, "Common Geo menu point out clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_building:
+                Toast.makeText(this, "Common Geo menu Building clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_axis:
+                Toast.makeText(this, "Common Geo menu Axis clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_marker_pointing:
+                Toast.makeText(this, "Common menu marker clicked..", Toast.LENGTH_SHORT).show();
+                onClear();
+                boolMeasureDistOnOff = false;
+                break;
+            case R.id.nav_itm_current_coordinates:
+                Toast.makeText(this, "Common menu current coordinate clicked..", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_measure_distance:
+                Toast.makeText(this, "Common menu mesure distance clicked..", Toast.LENGTH_SHORT).show();
+                measureDistance();
+                break;
+            case R.id.nav_itm_screen_capture:
+                // Toast.makeText(this, "Common menu capture screen clicked..", Toast.LENGTH_SHORT).show();
+                takePhoto();
+                Toast.makeText(getApplicationContext(), "현재 화면을 겔러리에 저장하였습니다.",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_lx_app:
+                // Toast.makeText(this, "Common menu LX App clicked..", Toast.LENGTH_SHORT).show();
+                callLx();
+                Toast.makeText(getApplicationContext(), "토지알리e 앱을 엽니다.",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_itm_gps_frequency:
+                Toast.makeText(this, "Common menu Show GPS frequency clicked..", Toast.LENGTH_SHORT).show();
+                break;
+
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -1109,18 +968,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
-
-        btnMenu01 = (Button) findViewById(R.id.btnMenu01);
-        btnMenu02 = (Button) findViewById(R.id.btnMenu02);
-        btnMenu03 = (Button) findViewById(R.id.btnMenu03);
-        btnMenu04 = (Button) findViewById(R.id.btnMenu04);
-        btnMenu05 = (Button) findViewById(R.id.btnMenu05);
-
-        // 지적 & 건물정보 표출 임시버튼
-        btnJeonJuBuildingDEM = (Button) findViewById(R.id.btnJeonJuBuildingDEM_0);
-        btnJeonJuPointOut = (Button) findViewById(R.id.btnJeonJuPointOut_0);
-        btnYongSanBuildingDEM = (Button) findViewById(R.id.btnYoungSanBuildingDEM_0);
-        btnYongSanPointOut = (Button) findViewById(R.id.btnYoungSanPointOut_0);
 
         locationView = (TextView) findViewById(R.id.locationView);
         distanceView = (TextView) findViewById(R.id.distanceView);
@@ -1249,7 +1096,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         return;
                     }
 
-                    if (!chkDist) {
+                    if (!boolMeasureDistOnOff) {
                         Anchor anchor = hitResult.createAnchor();
                         AnchorNode anchorNode = new AnchorNode(anchor);
                         anchorNode.setParent(arFragment.getArSceneView().getScene());
@@ -1259,7 +1106,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         icon.setParent(anchorNode);
                         icon.setRenderable(iconRenderable);
                         icon.select();
-                    } else if (chkDist) {
+                    } else if (boolMeasureDistOnOff) {
                         distanceAnchor = hitResult.createAnchor();
                         AnchorNode anchorNode = new AnchorNode(distanceAnchor);
                         anchorNode.setParent(arFragment.getArSceneView().getScene());
@@ -1340,6 +1187,139 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 }
         );
+    }
+
+    private void measureDistance() {
+        // 거리측정
+        if (boolMeasureDistOnOff) {
+            boolMeasureDistOnOff = false;
+            //btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_off));
+            distanceView.setVisibility(View.INVISIBLE);
+            distanceView.setText("");
+            onClear();
+        } else if (!boolMeasureDistOnOff) {
+            boolMeasureDistOnOff = true;
+            //btnMenu03.setBackgroundColor(getResources().getColor(R.color.btnBackground_on));
+            distanceView.setVisibility(View.VISIBLE);
+            distanceView.setText("첫번째 지점을 선택해 주세요");
+        }
+        //Toast.makeText(getApplicationContext(), "버튼3(거리측정) 클릭",Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * display JeonjuBuilding
+     */
+    private void displayJeonjuBuilding() {
+
+        onClear();
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        Quaternion camQ = scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+        Pose anchorPose = new Pose(f1, f2);
+
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
+    }
+
+    /**
+     * Display Jeon-ju Point Out
+     */
+    private void displayJeonJuPointOut() {
+        onClear();
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        Quaternion camQ = scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+        Pose anchorPose = new Pose(f1, f2);
+
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        placeObject(arFragment, anchor, Uri.parse("reverse_drop.sfb"));
+    }
+
+    /**
+     * Display Young-san Building
+     */
+    private void displayYongSanBuilding() {
+        onClear();
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        Quaternion camQ = scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+        Pose anchorPose = new Pose(f1, f2);
+
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        placeObject(arFragment, anchor, Uri.parse("YoungSanBuildingDEM_0.sfb"));
+    }
+
+    /**
+     * Display Yong-san Point out
+     */
+    private void displayYongSanPointOut() {
+        onClear();
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        Quaternion camQ = scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+        Pose anchorPose = new Pose(f1, f2);
+
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        placeObject(arFragment, anchor, Uri.parse("YoungSanPointOut_0.sfb"));
+    }
+
+    /**
+     * Building information pannel
+     **/
+    private void displayBuildingPannel() {
+        CompletableFuture<ViewRenderable> popupLayout =
+                ViewRenderable.builder()
+                        .setView(this, R.layout.popup_layout)
+                        .build();
+
+        // When you build a Renderable, Sceneform loads its resources in the background while returning
+        // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
+        CompletableFuture<ModelRenderable> andy = ModelRenderable.builder()
+                .setSource(this, R.raw.andy)
+                .build();
+
+        CompletableFuture.allOf(popupLayout, andy)
+                .handle(
+                        (notUsed, throwable) -> {
+                            // When you build a Renderable, Sceneform loads its resources in the background while
+                            // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
+                            // before calling get().
+
+                            if (throwable != null) {
+                                DemoUtils.displayError(this, "Unalbe to load renderables", throwable);
+                                return null;
+                            }
+
+                            try {
+                                popupLayoutRenderable = popupLayout.get();
+                                Log.e("try success", "complete get popupLayout");
+                                //andyRenderable = andy.get();
+                                hasFinishedLoading = true;
+
+                            } catch (InterruptedException | ExecutionException ex) {
+                                Log.e("error", "Unable to load renderables");
+                                DemoUtils.displayError(this, "Unable to load renderables", ex);
+                            }
+
+                            return null;
+                        }
+                );
     }
 
 }
