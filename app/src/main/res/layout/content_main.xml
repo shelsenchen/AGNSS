@@ -88,36 +88,7 @@
     </android.support.v4.widget.DrawerLayout>
 
     <!-- Information layout which comes out from left -->
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/leftDrawer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="48sp"
-            android:text="Menu1234"
-            android:background="#88FFFFFF"
-            android:textColor="#000000"
-            android:id="@+id/leftMenu"
-            />
-
-        <ListView
-            android:layout_width="2000dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:background="#FFC107"
-            android:id="@+id/leftMenuList"
-            />
-
-    </android.support.v4.widget.DrawerLayout>
 
     <!-- Map layout -->
     <FrameLayout
@@ -236,24 +207,6 @@
                 android:drawableStart="@drawable/ic_link_w"
                 />
 
-            <!-- 열기/닫기 버튼 레이아웃 -->
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/buton1"
-                android:onClick="onButton1Clicked"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="Open&#10;"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_land_w"
-                android:drawableStart="@drawable/ic_land_w"
-                />
-
-
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/btnJeonJuBuildingDEM_0"
                 android:layout_width="60dp"
@@ -314,6 +267,8 @@
                 android:drawableLeft="@drawable/ic_land_w"
                 android:drawableStart="@drawable/ic_land_w"
                 />
+
+            <!--
             <Button xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/open"
                 android:layout_width="60dp"
@@ -342,22 +297,7 @@
                 android:drawableLeft="@drawable/ic_land_w"
                 android:drawableStart="@drawable/ic_land_w"
                 />
-
-
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/btnLeftMenuOpen"
-                android:layout_width="60dp"
-                android:layout_height="40sp"
-                android:layout_margin="3sp"
-                android:background="@drawable/ic_menu_btn"
-                android:text="Menu&#10;"
-                android:textAllCaps="false"
-                android:textColor="#eeeeee"
-                android:textSize="13sp"
-                android:paddingLeft="3sp"
-                android:drawableLeft="@drawable/ic_land_w"
-                android:drawableStart="@drawable/ic_land_w"
-                />
+            -->
 
         </LinearLayout>
 

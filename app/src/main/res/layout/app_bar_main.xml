@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="ExtraText">
 
     <!--
         <android.support.design.widget.AppBarLayout
@@ -24,11 +25,11 @@
     <!--Custom Toolbar-->
     <include layout="@layout/toolbar" />
 
-    /** This line containing another layout from the outside. */
+    /* This line containing another layout from the outside. */
 
     <include layout="@layout/content_main" />
 
-    /** This button for adjusting the left slide view */
+    /* This button for adjusting the left slide view */
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/flobtnLeftFloating"
@@ -38,7 +39,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_menu_white_24dp" />
 
-    /** This button for adjusting the right slide view */
+    /* This button for adjusting the right slide view */
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/flobtnRightFloating"
