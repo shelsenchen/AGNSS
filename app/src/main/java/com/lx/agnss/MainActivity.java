@@ -418,7 +418,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         */
 
 
-                        ConstraintLayout fContainer = (ConstraintLayout) findViewById(R.id.masterLayout);
+//                        ConstraintLayout fContainer = (ConstraintLayout) findViewById(R.id.masterLayout);
+                        DrawerLayout fContainer = (DrawerLayout) findViewById(R.id.masterLayout);
                         fContainer.buildDrawingCache();
                         Bitmap fContainerLayoutView = fContainer.getDrawingCache();
 
