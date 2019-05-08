@@ -214,7 +214,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
                 Log.d("onLocationChanged", "Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-                locationView.setText("Lon : " + location.getLongitude() + ", Lat : " + location.getLatitude());
+
+                String locationString = getResources().getString(R.string.info_item_title_location);
+                locationString += "\n";
+                locationString += "LON : ";
+                locationString += location.getLongitude();
+                locationString += "\n";
+                locationString += "LAT : ";
+                locationString += location.getLatitude();
+
+                locationView.setText(locationString);
 
             }
 
