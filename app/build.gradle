@@ -36,9 +36,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.github.appoly:ARCore-Location:1.1.2'
     // DrawerLayout
-    compile 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
     // NavigationView
-    compile 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:gridlayout-v7:28.0.0'
 }
 
 
@@ -76,3 +77,9 @@ sceneform.asset('sampledata/JeonJuBuildingInterpolate_0.fbx',
         'default',
         'sampledata/JeonJuBuildingInterpolate_0.sfa',
         'src/main/assets/JeonJuBuildingInterpolate_0')
+
+
+sceneform.asset('sampledata/YongSanPointOutAndDEMAndFence_0.fbx',
+        'default',
+        'sampledata/YongSanPointOutAndDEMAndFence_0.sfa',
+        'src/main/assets/YongSanPointOutAndDEMAndFence_0')
