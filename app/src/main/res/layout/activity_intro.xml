@@ -1,9 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IntroActivity">
+    android:padding="10sp">
 
-</android.support.constraint.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/imageView_Podo"
+        android:layout_below="@+id/introLogo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="340dp"
+        android:layout_marginBottom="69dp" />
+
+    <LinearLayout
+        android:id="@+id/introLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView_LxLogo"
+            android:layout_width="127dp"
+            android:layout_height="74dp"
+            android:layout_margin="20dp"
+            android:src="@drawable/ic_intro_image_lx" />
+
+
+        <ImageView
+            android:id="@+id/imageView_Seoul_University"
+            android:layout_width="216dp"
+            android:layout_height="69dp"
+            android:layout_margin="20dp"
+            android:src="@drawable/ic_intro_image_seoul_university" />
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/introFooter"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView_Podo"
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_intro_image_podo" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="Next Go"
+            android:textSize="10dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

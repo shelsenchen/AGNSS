@@ -21,6 +21,10 @@
                 android:icon="@drawable/ic_marker_w"
                 android:title="@string/nav_itm_point_out_yongsan" />
             <item
+                android:id="@+id/nav_itm_point_out_dem_fense_yongsan"
+                android:icon="@drawable/ic_marker_w"
+                android:title="@string/nav_itm_point_out_dem_fense_yongsan" />
+            <item
                 android:id="@+id/nav_itm_building_yongsan"
                 android:icon="@drawable/ic_marker_w"
                 android:title="@string/nav_itm_building_yongsan" />

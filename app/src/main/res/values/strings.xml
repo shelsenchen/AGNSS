@@ -31,6 +31,7 @@
     <string name="nav_itm_axis">기준점</string>
 
     <string name="nav_itm_point_out_yongsan">용산지적</string>
+    <string name="nav_itm_point_out_dem_fense_yongsan">용산지적팬스</string>
     <string name="nav_itm_building_yongsan">용산건물</string>
     <string name="nav_itm_axis_yongsan">용산기준점</string>
 

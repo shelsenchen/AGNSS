@@ -7,18 +7,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-
 import android.graphics.Canvas;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -30,7 +29,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,7 +37,6 @@ import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +44,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
@@ -112,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationScene locationScene;
 
     // Renderablesfor this app
-    private ModelRenderable andyRenderable;
+//    private ModelRenderable andyRenderable;
     private ViewRenderable popupLayoutRenderable;
     private ModelRenderable iconRenderable;
     private ModelRenderable distIconRenderable;
@@ -122,36 +118,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ModelRenderable mrJeonJuPointOut;
     private ModelRenderable mrYongSanBuildingDEM;
     private ModelRenderable mrYongSanPointOut;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence;
 
     private boolean boolJeonJuBuildingDEM = false;
     private boolean boolJeonJuPointOut = false;
     private boolean boolYongSanBuildingDEM = false;
     private boolean boolYongSanPointOut = false;
+    private boolean boolYongSanPointOutAndDEMAndFence = false;
 
     private TextView locationView; // This view shown a coordinate
     private TextView distanceView; // This view shown a distance
 
-    // 거리측정용 변수 선언
+     /*거리측정용 변수 선언*/
     private boolean boolMeasureDistOnOff = false;
     private Pose startPose = null;
     private Pose endPose = null;
     private Anchor distanceAnchor;
 
-    //GoogleMap 변수 선언
+    /*GoogleMap 변수 선언*/
     private MapFragment mapFragment;
     private GoogleMap mMap;
-    private MapView mapView;
+//    private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "AIzaSyDFIvA8d4BKkrjXj_WYd_EDPFdxkOS4ww8";
     private LatLng currentPostion;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    //permmition
+//    permmition
     final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_ = 1001;
     final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION_ = 1002;
     final int PERMISSION = 1;
 
-    //Left slide menu
+//    Left slide menu
     ListView listView = null;
 
     /**
@@ -165,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * on create
      */
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,15 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initLayout();
 
         /* Reqeust Permission */
-        if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA}, PERMISSION);
-        }
+        requestPermission();
         /* Request Permission End */
 
         // Render assets
@@ -191,8 +182,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Make an instance for AR and listner
         initAR();
 
-        /*
-         ***   메뉴버튼 이벤트 처리 끝   ***
+        /**
+         *   메뉴버튼 이벤트 처리 끝
          */
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -865,6 +856,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(this, "Young-san point out clicked..", Toast.LENGTH_SHORT).show();
                 displayYongSanPointOut();
                 break;
+            case R.id.nav_itm_point_out_dem_fense_yongsan:
+                Toast.makeText(this, "Young-san point out clicked..", Toast.LENGTH_SHORT).show();
+                displayYongSanPointOut();
+                break;
             case R.id.nav_itm_building_yongsan:
                 Toast.makeText(this, "Young-san building clicked..", Toast.LENGTH_SHORT).show();
                 displayYongSanBuilding();
@@ -935,7 +930,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         getSupportActionBar().setTitle("A-GNSS");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-        toolbar.setVisibility(View.GONE);
+        toolbar.setVisibility(View.GONE); // To set to invisible the head bar
 
         drawerLayout = (DrawerLayout) findViewById(R.id.masterLayout);
         navigationView = (NavigationView) findViewById(nav_view);
@@ -952,7 +947,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // left side
         navigationView.setNavigationItemSelectedListener(this);
 
-        /** Left floating button for toggling menu view */
+        // Left floating button for toggling menu view
         FloatingActionButton flobtnLeftFloating = findViewById(R.id.flobtnLeftFloating);
         flobtnLeftFloating.setOnClickListener(new View.OnClickListener() {
 
@@ -1053,6 +1048,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             toast.show();
                             return null;
                         }
+                );
+
+        /* 전주지적 고도 팬스
+         * private ModelRenderable mrYongSanPointOutAndDEMAndFence
+         */
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse("YongSanPointOutAndDEMAndFence_0.sfb"))
+                .build()
+                .thenAccept(renderable -> mrYongSanPointOutAndDEMAndFence = renderable)
+                .exceptionally(
+                    throwable -> {
+                        Toast.makeText(this, "Unalbe to load YongSanPointOutAndDEMAndFence_0 renderable", Toast.LENGTH_LONG).show();
+                        return null;
+                    }
                 );
 
         /* 용산 건물
@@ -1193,12 +1202,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         distIcon.setRenderable(mrYongSanPointOut);
                         distIcon.select();
                     }
+                    // 용산 지적 고도 fense
+                    if (mrYongSanPointOutAndDEMAndFence != null && boolYongSanPointOutAndDEMAndFence == true) {
+                        Anchor makeAnchor = hitResult.createAnchor();
+                        AnchorNode anchorNode = new AnchorNode(makeAnchor);
+                        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
+                        distIcon.setParent(anchorNode);
+                        distIcon.setRenderable(mrYongSanPointOutAndDEMAndFence);
+                        distIcon.select();
+                    }
 
 
                 }
         );
     }
 
+    /**
+     * Measure distance between an anchor and another
+     */
     private void measureDistance() {
         // 거리측정
         if (boolMeasureDistOnOff) {
@@ -1291,6 +1314,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
+     * Display Yong-san Point out with Dem and fense
+     */
+    private void displayYongSanPointOutAndDEMAndFence() {
+        onClear();
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        Quaternion camQ =scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+        Pose anchorPose = new Pose(f1, f2);
+
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        placeObject(arFragment, anchor, Uri.parse("YongSanPointOutAndDEMAndFence_0.sfb"));
+    }
+
+    /**
      * Building information pannel
      **/
     private void displayBuildingPannel() {
@@ -1333,4 +1374,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 );
     }
 
+    /**
+     * Request permission
+     */
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA}, PERMISSION);
+        }
+    }
 }
