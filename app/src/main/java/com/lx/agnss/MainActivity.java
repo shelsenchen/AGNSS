@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView locationView; // This view shown a coordinate
     private TextView distanceView; // This view shown a distance
 
-     /*거리측정용 변수 선언*/
+    /*거리측정용 변수 선언*/
     private boolean boolMeasureDistOnOff = false;
     private Pose startPose = null;
     private Pose endPose = null;
@@ -138,18 +138,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /*GoogleMap 변수 선언*/
     private MapFragment mapFragment;
     private GoogleMap mMap;
-//    private MapView mapView;
+    //    private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "AIzaSyDFIvA8d4BKkrjXj_WYd_EDPFdxkOS4ww8";
     private LatLng currentPostion;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-//    permmition
+    //    permmition
     final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_ = 1001;
     final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION_ = 1002;
     final int PERMISSION = 1;
 
-//    Left slide menu
+    //    Left slide menu
     ListView listView = null;
 
     /**
@@ -171,10 +171,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         /** Initialization Layout */
         initLayout();
-
-        /* Reqeust Permission */
-        requestPermission();
-        /* Request Permission End */
 
         // Render assets
         renderModel();
@@ -248,82 +244,82 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Set an update listener on the Scene that will hide the loading message once a Plane is
         // detected.
         arSceneView
-            .getScene()
-            .addOnUpdateListener(
-                frameTime -> {
+                .getScene()
+                .addOnUpdateListener(
+                        frameTime -> {
 
-                    if (!hasFinishedLoading) {
-                        return;
-                    }
-
-                    if (locationScene == null) {
-
-                        // If our locationScene object hasn't been setup yet, this is a good time to do it
-                        // We know that here, the AR components have been initiated.
-                        locationScene = new LocationScene(this, this, arSceneView);
-
-                        // Now lets create our location markers.
-                        // First, a layout
-                        List<LocationMarker> LLM = new ArrayList<LocationMarker>();
-                        LocationMarker layoutLocationMarker = new LocationMarker(
-                                37.532946, 126.959868,
-                                getExampleView()
-                        );
-
-                        // An example "onRender" event, called every frame
-                        // Updates the layout with the markers distance
-                        layoutLocationMarker.setRenderEvent(new LocationNodeRender() {
-                            @Override
-                            public void render(LocationNode locationNode) {
-                                View eView = popupLayoutRenderable.getView();
-                                TextView distanceTextView = eView.findViewById(R.id.textView2);
-                                TextView nameView = eView.findViewById(R.id.textView1);
-                                TextView addrView = eView.findViewById(R.id.textView3);
-                                nameView.setText("롯데시네마 용산");
-                                distanceTextView.setText("lon : 37.532946\nlat : 126.959868");
-                                addrView.setText("주소 : 서울특별시 용산구 한강로3가 청파로 74");
+                            if (!hasFinishedLoading) {
+                                return;
                             }
-                        });
+
+                            if (locationScene == null) {
+
+                                // If our locationScene object hasn't been setup yet, this is a good time to do it
+                                // We know that here, the AR components have been initiated.
+                                locationScene = new LocationScene(this, this, arSceneView);
+
+                                // Now lets create our location markers.
+                                // First, a layout
+                                List<LocationMarker> LLM = new ArrayList<LocationMarker>();
+                                LocationMarker layoutLocationMarker = new LocationMarker(
+                                        37.532946, 126.959868,
+                                        getExampleView()
+                                );
+
+                                // An example "onRender" event, called every frame
+                                // Updates the layout with the markers distance
+                                layoutLocationMarker.setRenderEvent(new LocationNodeRender() {
+                                    @Override
+                                    public void render(LocationNode locationNode) {
+                                        View eView = popupLayoutRenderable.getView();
+                                        TextView distanceTextView = eView.findViewById(R.id.textView2);
+                                        TextView nameView = eView.findViewById(R.id.textView1);
+                                        TextView addrView = eView.findViewById(R.id.textView3);
+                                        nameView.setText("롯데시네마 용산");
+                                        distanceTextView.setText("lon : 37.532946\nlat : 126.959868");
+                                        addrView.setText("주소 : 서울특별시 용산구 한강로3가 청파로 74");
+                                    }
+                                });
 
 
-                        // Adding the marker
-                        //locationScene.mLocationMarkers.add(layoutLocationMarker);
+                                // Adding the marker
+                                //locationScene.mLocationMarkers.add(layoutLocationMarker);
 
-                        LLM.add(layoutLocationMarker);
+                                LLM.add(layoutLocationMarker);
 
-                        locationScene.mLocationMarkers.addAll(LLM);
+                                locationScene.mLocationMarkers.addAll(LLM);
 
-                        // Adding a simple location marker of a 3D model
+                                // Adding a simple location marker of a 3D model
 //                                locationScene.mLocationMarkers.add(
 //                                        new LocationMarker(
 //                                                37.399543,
 //                                                127.107045,
 //                                                getAndy()));
 
-                    }
-
-                    Frame frame = arSceneView.getArFrame();
-
-                    if (frame == null) {
-                        return;
-                    }
-
-                    if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
-                        return;
-                    }
-
-                    if (locationScene != null) {
-                        locationScene.processFrame(frame);
-                    }
-
-                    if (loadingMessageSnackbar != null) {
-                        for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
-                            if (plane.getTrackingState() == TrackingState.TRACKING) {
-                                hideLoadingMessage();
                             }
-                        }
-                    }
-                });
+
+                            Frame frame = arSceneView.getArFrame();
+
+                            if (frame == null) {
+                                return;
+                            }
+
+                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+                                return;
+                            }
+
+                            if (locationScene != null) {
+                                locationScene.processFrame(frame);
+                            }
+
+                            if (loadingMessageSnackbar != null) {
+                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+                                    if (plane.getTrackingState() == TrackingState.TRACKING) {
+                                        hideLoadingMessage();
+                                    }
+                                }
+                            }
+                        });
 
         // Lastly request CAMERA & fine location permission which is required by ARCore-Location.
         ARLocationPermissionHelper.requestPermission(this);
@@ -333,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Get start map(start?)
+     *
      * @param outState
      */
     @Override
@@ -350,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Map ready(End?)
+     *
      * @param googleMap
      */
     @SuppressLint("MissingPermission")
@@ -441,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     });
                     snackbar.show();
                 } else {
-                    Toast.makeText(this,"Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG).show();
                 }
                 handlerThread.quitSafely();
             }, new Handler(handlerThread.getLooper()));
@@ -450,6 +448,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Save bitmap to disk
+     *
      * @param bitmap
      * @param filename
      * @throws IOException
@@ -473,6 +472,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Make a file name
+     *
      * @return
      */
     private String generateFilename() {
@@ -487,6 +487,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Merge bitmap between
+     *
      * @param back
      * @param front
      * @return
@@ -504,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *  Find a LX app from the package manager
+     * Find a LX app from the package manager
      */
     public boolean getPackageList() {
 
@@ -537,7 +538,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     public void callLx() {
 
-        if ( getPackageList() ) {
+        if (getPackageList()) {
             Intent intent = getPackageManager().getLaunchIntentForPackage("kr.or.kcsc.android.application");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -550,6 +551,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Example node of a layout
+     *
      * @return
      */
     private Node getExampleView() {
@@ -633,29 +635,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *
-     * @param requestCode
-     * @param permissions
-     * @param results
-     */
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
-        if (!ARLocationPermissionHelper.hasPermission(this)) {
-            if (!ARLocationPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                // Permission denied with checking "Do not ask again".
-                ARLocationPermissionHelper.launchPermissionSettings(this);
-            } else {
-                Toast.makeText(
-                        this, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
-                        .show();
-            }
-            finish();
-        }
-    }
-
-    /**
-     *
      * @param hasFocus
      */
     @Override
@@ -677,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *  Represent the message while it searching a sufface.
+     * Represent the message while it searching a sufface.
      */
     private void showLoadingMessage() {
         if (loadingMessageSnackbar != null && loadingMessageSnackbar.isShownOrQueued()) {
@@ -722,9 +701,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
     /**
      * Draw a line in AR view.
+     *
      * @param scene
      * @param fromPose
      * @param toPose
@@ -779,31 +758,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // 1. make a material by the color
         MaterialFactory.makeOpaqueWithColor(arFragment.getContext(), colorOrange)
-            .thenAccept(material -> {
-                // 2. make a model by the material
-                ModelRenderable model = ShapeFactory.makeCylinder(0.0025f, lineLength,
-                        new Vector3(0f, lineLength / 2, 0f), material);
-                model.setShadowReceiver(false);
-                model.setShadowCaster(false);
+                .thenAccept(material -> {
+                    // 2. make a model by the material
+                    ModelRenderable model = ShapeFactory.makeCylinder(0.0025f, lineLength,
+                            new Vector3(0f, lineLength / 2, 0f), material);
+                    model.setShadowReceiver(false);
+                    model.setShadowCaster(false);
 
-                // 3. make node
-                Node node = new Node();
-                node.setRenderable(model);
-                node.setParent(anchorNode);
+                    // 3. make node
+                    Node node = new Node();
+                    node.setRenderable(model);
+                    node.setParent(anchorNode);
 
-                // 4. set rotation
-                final Vector3 difference = Vector3.subtract(to, from);
-                final Vector3 directionFromTopToBottom = difference.normalized();
-                final Quaternion rotationFromAToB =
-                        Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
-                node.setWorldRotation(Quaternion.multiply(rotationFromAToB,
-                        Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 90)));
-            });
+                    // 4. set rotation
+                    final Vector3 difference = Vector3.subtract(to, from);
+                    final Vector3 directionFromTopToBottom = difference.normalized();
+                    final Quaternion rotationFromAToB =
+                            Quaternion.lookRotation(directionFromTopToBottom, Vector3.up());
+                    node.setWorldRotation(Quaternion.multiply(rotationFromAToB,
+                            Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 90)));
+                });
     }
 
-
     /**
-     *
      * @param fragment
      * @param anchor
      * @param model
@@ -824,7 +801,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *
      * @param fragment
      * @param anchor
      * @param renderable
@@ -840,6 +816,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Navigation menu item click
+     *
      * @param item
      * @return
      */
@@ -902,12 +879,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.nav_itm_screen_capture:
                 // Toast.makeText(this, "Common menu capture screen clicked..", Toast.LENGTH_SHORT).show();
                 takePhoto();
-                Toast.makeText(getApplicationContext(), "현재 화면을 겔러리에 저장하였습니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "현재 화면을 겔러리에 저장하였습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_itm_lx_app:
                 // Toast.makeText(this, "Common menu LX App clicked..", Toast.LENGTH_SHORT).show();
                 callLx();
-                Toast.makeText(getApplicationContext(), "토지알리e 앱을 엽니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "토지알리e 앱을 엽니다.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_itm_gps_frequency:
                 Toast.makeText(this, "Common menu Show GPS frequency clicked..", Toast.LENGTH_SHORT).show();
@@ -979,7 +956,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     *  Render assets
+     * Render assets
      */
     private void renderModel() {
         /* 기본 마커 아이콘 */
@@ -1058,10 +1035,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build()
                 .thenAccept(renderable -> mrYongSanPointOutAndDEMAndFence = renderable)
                 .exceptionally(
-                    throwable -> {
-                        Toast.makeText(this, "Unalbe to load YongSanPointOutAndDEMAndFence_0 renderable", Toast.LENGTH_LONG).show();
-                        return null;
-                    }
+                        throwable -> {
+                            Toast.makeText(this, "Unalbe to load YongSanPointOutAndDEMAndFence_0 renderable", Toast.LENGTH_LONG).show();
+                            return null;
+                        }
                 );
 
         /* 용산 건물
@@ -1320,7 +1297,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         onClear();
 
         Scene scene = arFragment.getArSceneView().getScene();
-        Quaternion camQ =scene.getCamera().getWorldRotation();
+        Quaternion camQ = scene.getCamera().getWorldRotation();
 
         float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
         float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
@@ -1374,18 +1351,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 );
     }
 
-    /**
-     * Request permission
-     */
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA}, PERMISSION);
-        }
-    }
 }

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="10sp">
+    android:layout_height="match_parent">
 
 
     <ProgressBar
@@ -10,7 +9,6 @@
         style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView_Podo"
         android:layout_below="@+id/introLogo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp"
@@ -48,13 +46,14 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_alignParentBottom="true"
+        android:background="#F3EFEF"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/imageView_Podo"
             android:layout_width="wrap_content"
             android:layout_height="15dp"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentBottom="false"
             android:layout_centerInParent="true"
             android:src="@drawable/ic_intro_image_podo" />
 
@@ -63,8 +62,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="Next Go"
-            android:textSize="10dp" />
+            android:fontFamily="monospace"
+            android:text="Get Start"
+            android:textSize="8sp" />
 
     </RelativeLayout>
 
