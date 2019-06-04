@@ -78,8 +78,28 @@ sceneform.asset('sampledata/JeonJuBuildingInterpolate_0.fbx',
         'sampledata/JeonJuBuildingInterpolate_0.sfa',
         'src/main/assets/JeonJuBuildingInterpolate_0')
 
+sceneform.asset('sampledata/fence_1.fbx',
+        'default',
+        'sampledata/fence_1.sfa',
+        'src/main/assets/fence_1')
+
+sceneform.asset('sampledata/fence_2.fbx',
+        'default',
+        'sampledata/fence_2.sfa',
+        'src/main/assets/fence_2')
 
 sceneform.asset('sampledata/YongSanPointOutAndDEMAndFence_0.fbx',
         'default',
         'sampledata/YongSanPointOutAndDEMAndFence_0.sfa',
         'src/main/assets/YongSanPointOutAndDEMAndFence_0')
+
+sceneform.asset('sampledata/YongSanPointOutAndDEMAndFence_1.fbx',
+        'default',
+        'sampledata/YongSanPointOutAndDEMAndFence_1.sfa',
+        'src/main/assets/YongSanPointOutAndDEMAndFence_1')
+
+sceneform.asset('sampledata/YongSanPointOutAndDEMAndFence_2.fbx',
+        'default',
+        'sampledata/YongSanPointOutAndDEMAndFence_2.sfa',
+        'src/main/assets/YongSanPointOutAndDEMAndFence_2')
+

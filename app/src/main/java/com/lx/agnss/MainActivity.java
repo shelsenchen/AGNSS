@@ -1,6 +1,5 @@
 package com.lx.agnss;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +20,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -73,6 +70,7 @@ import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.lx.agnss.service.impl.DemoUtils;
+import com.lx.agnss.service.impl.ImageWorkerService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -81,7 +79,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -113,18 +113,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ModelRenderable iconRenderable;
     private ModelRenderable distIconRenderable;
 
+    // Building and Point Out Map for adjusting it.
+    Map<String, BuildingPointOutModel> mapListBuildingPointOutMode = new HashMap<String, BuildingPointOutModel>();
+
     // 용산 전주 model
     private ModelRenderable mrJeonJuBuildingDEM;
     private ModelRenderable mrJeonJuPointOut;
     private ModelRenderable mrYongSanBuildingDEM;
     private ModelRenderable mrYongSanPointOut;
-    private ModelRenderable mrYongSanPointOutAndDEMAndFence;
+    private ModelRenderable mrFenceTester_1;
+    private ModelRenderable mrFenceTester;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_0;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_1;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_2;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_3;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_4;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_5;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_6;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_7;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_8;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_9;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_10;
+    private ModelRenderable mrYongSanPointOutAndDEMAndFence_11;
 
     private boolean boolJeonJuBuildingDEM = false;
     private boolean boolJeonJuPointOut = false;
     private boolean boolYongSanBuildingDEM = false;
     private boolean boolYongSanPointOut = false;
-    private boolean boolYongSanPointOutAndDEMAndFence = false;
+    private boolean boolFenceTester = false;
 
     private TextView locationView; // This view shown a coordinate
     private TextView distanceView; // This view shown a distance
@@ -138,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /*GoogleMap 변수 선언*/
     private MapFragment mapFragment;
     private GoogleMap mMap;
-    //    private MapView mapView;
+    // private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "AIzaSyDFIvA8d4BKkrjXj_WYd_EDPFdxkOS4ww8";
     private LatLng currentPostion;
     private LocationManager locationManager;
@@ -169,28 +185,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /** Initialization Layout */
-        initLayout();
+        /** Let's get start **/
 
-        // Render assets
-        renderModel();
+        initLayout(); // Initialization Layout
+        renderModel(); // Render assets
+        initAR(); // Make an instance for AR and listner
 
-        // Make an instance for AR and listner
-        initAR();
-
-        /**
-         *   메뉴버튼 이벤트 처리 끝
-         */
+        // Google map
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
 
+        // Load an ar fragment and assign to fragment layer.
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
 
 
         // initMap();
+
+        // To get location manager from context.
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         locationListener = new LocationListener() {
@@ -200,7 +214,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-                Log.d("onLocationChanged", "Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
 
                 String locationString = getResources().getString(R.string.info_item_title_location);
                 locationString += "\n";
@@ -216,17 +229,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
+                Toast.makeText(getApplicationContext(), "Getting a location manager status.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
+                Toast.makeText(getApplicationContext(), "Location manager enabled.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                Toast.makeText(getApplicationContext(), "Location manager disabled.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -248,9 +261,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnUpdateListener(
                         frameTime -> {
 
-                            if (!hasFinishedLoading) {
-                                return;
-                            }
+                            if (!hasFinishedLoading) return;
 
                             if (locationScene == null) {
 
@@ -382,8 +393,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArSceneView view = arFragment.getArSceneView();
 
         // Create a bitmap the size of the scene view.
-        final Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),
-                Bitmap.Config.ARGB_8888);
+        final Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
 
         // Create a handler thread to offload the processing of the image.
         final HandlerThread handlerThread = new HandlerThread("PixelCopier");
@@ -393,30 +403,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             PixelCopy.request(view, bitmap, (copyResult) -> {
                 if (copyResult == PixelCopy.SUCCESS) {
                     try {
-                        /*
-                        LinearLayout fContainer1 = (LinearLayout)findViewById(R.id.menuLayout);
-                        fContainer1.buildDrawingCache();
-                        Bitmap fContainerLayoutView01 = fContainer1.getDrawingCache();
-
-                        LinearLayout fContainer2 = (LinearLayout)findViewById(R.id.mapLayout);
-                        fContainer2.buildDrawingCache();
-                        Bitmap fContainerLayoutView02 = fContainer2.getDrawingCache();
-
-                        Bitmap layout = mergeToPin(fContainerLayoutView01, fContainerLayoutView02);
-                        Bitmap result = mergeToPin(bitmap, layout);
-                        */
-
-
-//                        ConstraintLayout fContainer = (ConstraintLayout) findViewById(R.id.masterLayout);
                         DrawerLayout fContainer = (DrawerLayout) findViewById(R.id.masterLayout);
+
                         fContainer.buildDrawingCache();
+
                         Bitmap fContainerLayoutView = fContainer.getDrawingCache();
 
                         Bitmap result = mergeToPin(bitmap, fContainerLayoutView);
 
-
                         saveBitmapToDisk(result, filename);
-                        //saveBitmapToDisk(bitmap, filename);
+
                     } catch (IOException e) {
                         Toast toast = Toast.makeText(this, e.toString(),
                                 Toast.LENGTH_LONG);
@@ -550,7 +546,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Example node of a layout
+     * NC soft pannel
      *
      * @return
      */
@@ -824,70 +820,77 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_jeonju:
-                Toast.makeText(this, "Jeon-ju clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Jeon-ju clicked..");
                 break;
             case R.id.menu_yongsan:
-                Toast.makeText(this, "Yong-san clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Yong-san clicked.");
                 break;
             case R.id.nav_itm_point_out_yongsan:
-                Toast.makeText(this, "Young-san point out clicked..", Toast.LENGTH_SHORT).show();
-                displayYongSanPointOut();
+                displayToastMsg("Young-san point out clicked..");
+                displayModelInARScene("YoungSanPointOut_0.sfb");
                 break;
-            case R.id.nav_itm_point_out_dem_fense_yongsan:
-                Toast.makeText(this, "Young-san point out clicked..", Toast.LENGTH_SHORT).show();
-                displayYongSanPointOut();
+            case R.id.nav_itm_fence_tester:
+                displayToastMsg("Fence data display test.");
+                displayModelInARScene("YongSanPointOutAndDEMAndFence_0.sfb");
+                //displayModelInARScene("fence_2.sfb");
+                //displayModelInARScene("fence_1.sfb");
                 break;
             case R.id.nav_itm_building_yongsan:
-                Toast.makeText(this, "Young-san building clicked..", Toast.LENGTH_SHORT).show();
-                displayYongSanBuilding();
+                displayToastMsg("Young-san building clicked.");
+                displayModelInARScene("YoungSanBuildingDEM_0.sfb");
                 break;
             case R.id.nav_itm_axis_yongsan:
-                Toast.makeText(this, "Young-san Axis out clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Young-san Axis out clicked.");
                 break;
             case R.id.nav_itm_point_out_jeonju:
-                Toast.makeText(this, "Jeon-ju point out clicked..", Toast.LENGTH_SHORT).show();
-                displayJeonJuPointOut();
+                displayToastMsg("Jeon-ju point out clicked.");
+                displayModelInARScene("JeonJuBuildPointOutInterpolate_0.sfb");
                 break;
             case R.id.nav_itm_building_jeonju:
-                Toast.makeText(this, "Jeon-ju building clicked..", Toast.LENGTH_SHORT).show();
-                displayJeonjuBuilding();
+                displayToastMsg("Jeon-ju building clicked.");
+                displayModelInARScene("JeonJuBuildingInterpolate_0.sfb");
                 break;
             case R.id.nav_itm_axis_jeonju:
-                Toast.makeText(this, "Jeon-ju Axis clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Jeon-ju Axis clicked.");
                 break;
             case R.id.nav_itm_point_out:
-                Toast.makeText(this, "Common Geo menu point out clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Common Geo menu point out clicked.");
                 break;
             case R.id.nav_itm_building:
-                Toast.makeText(this, "Common Geo menu Building clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Common Geo menu Building clicked.");
                 break;
             case R.id.nav_itm_axis:
-                Toast.makeText(this, "Common Geo menu Axis clicked..", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_itm_marker_pointing:
-                Toast.makeText(this, "Common menu marker clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Common menu marker clicked.");
                 onClear();
                 boolMeasureDistOnOff = false;
                 break;
             case R.id.nav_itm_current_coordinates:
-                Toast.makeText(this, "Common menu current coordinate clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Common menu current coordinate clicked.");
                 break;
             case R.id.nav_itm_measure_distance:
-                Toast.makeText(this, "Common menu mesure distance clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Common menu mesure distance clicked.");
                 measureDistance();
                 break;
             case R.id.nav_itm_screen_capture:
-                // Toast.makeText(this, "Common menu capture screen clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("현재 화면을 겔러리에 저장하였습니다.");
                 takePhoto();
-                Toast.makeText(getApplicationContext(), "현재 화면을 겔러리에 저장하였습니다.", Toast.LENGTH_SHORT).show();
+
+                //ImageWorkerService imageWorkerService = new ImageWorkerService();
+                //imageWorkerService.takePhoto(this,arFragment);
+                break;
+            case R.id.nav_itm_screen_capture_by_class:
+                displayToastMsg("Capture screen class tester works.");
+                ImageWorkerService iws = new ImageWorkerService(this, arFragment);
+                iws.takePhoto();
                 break;
             case R.id.nav_itm_lx_app:
-                // Toast.makeText(this, "Common menu LX App clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("LX 공사 랜다랑 앱을 엽니다.");
                 callLx();
-                Toast.makeText(getApplicationContext(), "토지알리e 앱을 엽니다.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_itm_gps_frequency:
-                Toast.makeText(this, "Common menu Show GPS frequency clicked..", Toast.LENGTH_SHORT).show();
+                displayToastMsg("Common menu Show GPS frequency clicked.");
                 break;
 
         }
@@ -960,6 +963,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private void renderModel() {
         /* 기본 마커 아이콘 */
+//        fnModelRenderableWorker("default_icon.sfb", iconRenderable);
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
                 .setSource(this, Uri.parse("default_icon.sfb"))
@@ -967,15 +971,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .thenAccept(renderable -> iconRenderable = renderable)
                 .exceptionally(
                         throwable -> {
-                            Toast toast =
-                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
+                            Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG).show();
                             return null;
                         }
                 );
 
+
         /* 거리측정용 마커 아이콘*/
+//        fnModelRenderableWorker("reverse_drop.sfb", distIconRenderable);
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
                 .setSource(this, Uri.parse("reverse_drop.sfb"))
@@ -991,92 +994,47 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                 );
 
-        /* 전주 건물
-         * private ModelRenderable mrJeonJuBuildingDEM;
-         **/
-        ModelRenderable.builder()
-                //.setSource(this,R.raw.andy)
-                .setSource(this, Uri.parse("reverse_drop.sfb"))
-                .build()
-                .thenAccept(renderable -> mrJeonJuBuildingDEM = renderable)
-                .exceptionally(
-                        throwable -> {
-                            Toast toast =
-                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            return null;
-                        }
-                );
 
-        /* 전주 지적
-         * private ModelRenderable mrJeonJuPointOut;
-         **/
-        ModelRenderable.builder()
-                //.setSource(this,R.raw.andy)
-                .setSource(this, Uri.parse("reverse_drop.sfb"))
-                .build()
-                .thenAccept(renderable -> mrJeonJuPointOut = renderable)
-                .exceptionally(
-                        throwable -> {
-                            Toast toast =
-                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            return null;
-                        }
-                );
-
-        /* 전주지적 고도 팬스
-         * private ModelRenderable mrYongSanPointOutAndDEMAndFence
+        /**
+         * Fence tester Model rendering
          */
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("YongSanPointOutAndDEMAndFence_0.sfb"))
                 .build()
-                .thenAccept(renderable -> mrYongSanPointOutAndDEMAndFence = renderable)
+                .thenAccept(renderable -> mrYongSanPointOutAndDEMAndFence_0 = renderable)
                 .exceptionally(
                         throwable -> {
-                            Toast.makeText(this, "Unalbe to load YongSanPointOutAndDEMAndFence_0 renderable", Toast.LENGTH_LONG).show();
-                            return null;
-                        }
-                );
-
-        /* 용산 건물
-         * private ModelRenderable mrYongSanBuildingDEM;
-         * private ModelRenderable mrYongSanPointOut;
-         **/
-        ModelRenderable.builder()
-                //.setSource(this,R.raw.andy)
-                .setSource(this, Uri.parse("YongSanBuildingDEM_0.sfb"))
-                .build()
-                .thenAccept(renderable -> mrYongSanBuildingDEM = renderable)
-                .exceptionally(
-                        throwable -> {
-                            Toast toast =
-                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
+                            Toast toast = Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
 
-        /* 용산 지적
-         * private ModelRenderable mrYongSanPointOut;
-         **/
+        //fnModelRenderableWorker("YongSanPointOutAndDEMAndFence_1.sfb", mrYongSanPointOutAndDEMAndFence_1);
         ModelRenderable.builder()
-                //.setSource(this,R.raw.andy)
-                .setSource(this, Uri.parse("YongSanPointOut_0.sfb"))
+                .setSource(this, Uri.parse("YongSanPointOutAndDEMAndFence_1.sfb"))
                 .build()
-                .thenAccept(renderable -> mrYongSanPointOut = renderable)
+                .thenAccept(renderable -> mrYongSanPointOutAndDEMAndFence_1 = renderable)
                 .exceptionally(
                         throwable -> {
-                            Toast toast =
-                                    Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
+                            Toast toast = Toast.makeText(this, "Unalbe to load icon renderable", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             return null;
                         }
                 );
+        fnModelRenderableWorker("YongSanBuildingDEM_0.sfb", mrYongSanBuildingDEM); // 용산 건물
+
+        fnModelRenderableWorker("YongSanPointOut_0.sfb", mrYongSanPointOut); // 용산 지적
+
+        fnModelRenderableWorker("JeonJuBuildingInterpolate_0.sfb", mrJeonJuBuildingDEM); //전주 건물
+
+        fnModelRenderableWorker("JeonJuBuildPointOutInterpolate_0.sfb", mrJeonJuPointOut); // 전주 지적
+
+        fnModelRenderableWorker("fence_1.sfb", mrFenceTester_1); // Fence test simple square
+
+        fnModelRenderableWorker("fence_2.sfb", mrFenceTester); // Fence test yongsan
     }
 
     /**
@@ -1180,14 +1138,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         distIcon.select();
                     }
                     // 용산 지적 고도 fense
-                    if (mrYongSanPointOutAndDEMAndFence != null && boolYongSanPointOutAndDEMAndFence == true) {
+                    if (mrFenceTester != null && boolFenceTester == true) {
                         Anchor makeAnchor = hitResult.createAnchor();
                         AnchorNode anchorNode = new AnchorNode(makeAnchor);
                         anchorNode.setParent(arFragment.getArSceneView().getScene());
 
                         TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
                         distIcon.setParent(anchorNode);
-                        distIcon.setRenderable(mrYongSanPointOutAndDEMAndFence);
+                        distIcon.setRenderable(mrFenceTester);
                         distIcon.select();
                     }
 
@@ -1215,97 +1173,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Toast.makeText(getApplicationContext(), "첫번째 지점을 선택해 주세요", Toast.LENGTH_SHORT).show();
         }
         //Toast.makeText(getApplicationContext(), "버튼3(거리측정) 클릭",Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * display JeonjuBuilding
-     */
-    private void displayJeonjuBuilding() {
-
-        onClear();
-
-        Scene scene = arFragment.getArSceneView().getScene();
-        Quaternion camQ = scene.getCamera().getWorldRotation();
-
-        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-        Pose anchorPose = new Pose(f1, f2);
-
-        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-        placeObject(arFragment, anchor, Uri.parse("JeonJuBuildingInterpolate_0.sfb"));
-    }
-
-    /**
-     * Display Jeon-ju Point Out
-     */
-    private void displayJeonJuPointOut() {
-        onClear();
-
-        Scene scene = arFragment.getArSceneView().getScene();
-        Quaternion camQ = scene.getCamera().getWorldRotation();
-
-        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-        Pose anchorPose = new Pose(f1, f2);
-
-        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-        placeObject(arFragment, anchor, Uri.parse("JeonJuBuildPointOutInterpolate_0.sfb"));
-    }
-
-    /**
-     * Display Young-san Building
-     */
-    private void displayYongSanBuilding() {
-        onClear();
-
-        Scene scene = arFragment.getArSceneView().getScene();
-        Quaternion camQ = scene.getCamera().getWorldRotation();
-
-        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-        Pose anchorPose = new Pose(f1, f2);
-
-        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-        placeObject(arFragment, anchor, Uri.parse("YoungSanBuildingDEM_0.sfb"));
-    }
-
-    /**
-     * Display Yong-san Point out
-     */
-    private void displayYongSanPointOut() {
-        onClear();
-
-        Scene scene = arFragment.getArSceneView().getScene();
-        Quaternion camQ = scene.getCamera().getWorldRotation();
-
-        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-        Pose anchorPose = new Pose(f1, f2);
-
-        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-        placeObject(arFragment, anchor, Uri.parse("YoungSanPointOut_0.sfb"));
-    }
-
-    /**
-     * Display Yong-san Point out with Dem and fense
-     */
-    private void displayYongSanPointOutAndDEMAndFence() {
-        onClear();
-
-        Scene scene = arFragment.getArSceneView().getScene();
-        Quaternion camQ = scene.getCamera().getWorldRotation();
-
-        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
-        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
-        Pose anchorPose = new Pose(f1, f2);
-
-        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
-
-        placeObject(arFragment, anchor, Uri.parse("YongSanPointOutAndDEMAndFence_0.sfb"));
     }
 
     /**
@@ -1351,4 +1218,43 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 );
     }
 
+    private void fnModelRenderableWorker(String sfbFile, ModelRenderable modelRenderable) {
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse(sfbFile))
+                .build()
+                .thenAccept(renderable -> mrFenceTester = renderable)
+                .exceptionally(
+                        throwable -> {
+                            return null;
+                        }
+                );
+    }
+
+    private void displayModelInARScene(String fsbFileName) {
+        onClear();
+
+        Scene scene = arFragment.getArSceneView().getScene();
+        Quaternion camQ = scene.getCamera().getWorldRotation();
+
+        float[] f1 = new float[]{camQ.x, camQ.y, camQ.z};
+        float[] f2 = new float[]{camQ.x, camQ.y, camQ.z, 90f};
+        Pose anchorPose = new Pose(f1, f2);
+
+        Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(anchorPose);
+
+        placeObject(arFragment, anchor, Uri.parse(fsbFileName));
+    }
+
+    private void displayToastMsg(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+}
+
+
+class BuildingPointOutModel {
+    String id;
+    String path;
+    ModelRenderable mrModelRenderable;
+    Boolean boolModelEnableDisable = false;
 }

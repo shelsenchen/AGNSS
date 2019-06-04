@@ -102,3 +102,11 @@ public class IntroActivity extends AppCompatActivity {
         }
     }
 }
+
+/**
+ * App Structure class
+ */
+class AppInfo {
+    String appName = null;
+
+}

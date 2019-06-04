@@ -21,9 +21,9 @@
                 android:icon="@drawable/ic_marker_w"
                 android:title="@string/nav_itm_point_out_yongsan" />
             <item
-                android:id="@+id/nav_itm_point_out_dem_fense_yongsan"
+                android:id="@+id/nav_itm_fence_tester"
                 android:icon="@drawable/ic_marker_w"
-                android:title="@string/nav_itm_point_out_dem_fense_yongsan" />
+                android:title="@string/nav_itm_fence_tester" />
             <item
                 android:id="@+id/nav_itm_building_yongsan"
                 android:icon="@drawable/ic_marker_w"
@@ -87,6 +87,10 @@
                 android:id="@+id/nav_itm_screen_capture"
                 android:icon="@drawable/ic_screenshot_w"
                 android:title="@string/nav_itm_screen_capture" />
+            <item
+                android:id="@+id/nav_itm_screen_capture_by_class"
+                android:icon="@drawable/ic_screenshot_w"
+                android:title="@string/nav_itm_screen_capture_by_class" />
             <item
                 android:id="@+id/nav_itm_lx_app"
                 android:icon="@drawable/ic_link_w"

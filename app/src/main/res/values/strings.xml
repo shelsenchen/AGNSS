@@ -23,7 +23,8 @@
     <string name="nav_itm_current_coordinates">좌표측정</string>
     <string name="nav_itm_measure_distance">거리측정</string>
     <string name="nav_itm_screen_capture">화면캡쳐</string>
-    <string name="nav_itm_lx_app">토지알림e</string>
+    <string name="nav_itm_screen_capture_by_class">CaptureModelTester</string>
+    <string name="nav_itm_lx_app">랜다랑</string>
     <string name="nav_itm_gps_frequency">GPS Frequency</string>
 
     <string name="nav_itm_point_out">지적</string>
@@ -31,7 +32,7 @@
     <string name="nav_itm_axis">기준점</string>
 
     <string name="nav_itm_point_out_yongsan">용산지적</string>
-    <string name="nav_itm_point_out_dem_fense_yongsan">용산지적팬스</string>
+    <string name="nav_itm_fence_tester">FenceTester</string>
     <string name="nav_itm_building_yongsan">용산건물</string>
     <string name="nav_itm_axis_yongsan">용산기준점</string>
 
