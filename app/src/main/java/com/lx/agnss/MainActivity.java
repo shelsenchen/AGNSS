@@ -88,6 +88,7 @@ import uk.co.appoly.arcorelocation.rendering.LocationNode;
 import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
 import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
 
+import static com.lx.agnss.R.*;
 import static com.lx.agnss.R.id.nav_view;
 
 /**
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(layout.activity_main);
 
         // Let's get start
         initLayout();                       // Initialization Layout
@@ -210,9 +211,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         @Override
                                         public void render(LocationNode locationNode) {
                                             View eView = popupLayoutRenderable.getView();
-                                            TextView distanceTextView = eView.findViewById(R.id.textView2);
-                                            TextView nameView = eView.findViewById(R.id.textView1);
-                                            TextView addrView = eView.findViewById(R.id.textView3);
+                                            TextView distanceTextView = eView.findViewById(id.textView2);
+                                            TextView nameView = eView.findViewById(id.textView1);
+                                            TextView addrView = eView.findViewById(id.textView3);
                                             nameView.setText(rp.locationName);
                                             distanceTextView.setText("lon: " + rp.locationMarker.longitude + ": " + rp.locationMarker.latitude);
                                             addrView.setText(rp.locationDescription);
@@ -232,9 +233,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     @Override
                                     public void render(LocationNode locationNode) {
                                         View eView = popupLayoutRenderable.getView();
-                                        TextView distanceTextView = eView.findViewById(R.id.textView2);
-                                        TextView nameView = eView.findViewById(R.id.textView1);
-                                        TextView addrView = eView.findViewById(R.id.textView3);
+                                        TextView distanceTextView = eView.findViewById(id.textView2);
+                                        TextView nameView = eView.findViewById(id.textView1);
+                                        TextView addrView = eView.findViewById(id.textView3);
                                         nameView.setText("롯데시네마 용산");
                                         distanceTextView.setText("lon : 37.532946\nlat : 126.959868");
                                         addrView.setText("주소 : 서울특별시 용산구 한강로3가 청파로 74");
@@ -292,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
                 //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
 
-                String locationString = getResources().getString(R.string.info_item_title_location);
+                String locationString = getResources().getString(string.info_item_title_location);
                 locationString += "\n";
                 locationString += "Lon: ";
                 locationString += location.getLongitude();
@@ -340,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         // Load an ar fragment and assign to fragment layer.
-        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(id.mapFragment);
         mapFragment.getMapAsync(this);
     }
 
@@ -414,42 +415,51 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             PixelCopy.request(view, bitmap, (copyResult) -> {
                 if (copyResult == PixelCopy.SUCCESS) {
                     try {
-                        DrawerLayout fContainer = (DrawerLayout) findViewById(R.id.masterLayout);
-
+                        DrawerLayout fContainer = (DrawerLayout) findViewById(id.masterLayout); //
                         fContainer.buildDrawingCache();
 
                         Bitmap fContainerLayoutView = fContainer.getDrawingCache();
-
                         Bitmap result = new ImageWorkerService().mergeToPin(bitmap, fContainerLayoutView);
 
                         fileManager.saveBitmapToDisk(result, filename);
-
                     } catch (IOException e) {
-                        Toast toast = Toast.makeText(this, e.toString(),
-                                Toast.LENGTH_LONG);
-                        toast.show();
+                        displayToastMsg(e.toString());
                         return;
                     }
-                    Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
-                            "저장 완료", Snackbar.LENGTH_LONG);
-                    snackbar.setAction("사진 보기", v -> {
-                        File photoFile = new File(filename);
 
-                        Uri photoURI = FileProvider.getUriForFile(this,
-                                this.getPackageName() + ".save.provider",
-                                photoFile);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, photoURI);
-                        intent.setDataAndType(photoURI, "image/*");
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(intent);
+                    displaySnackbar("저장완료", filename);
 
-                    });
-                    snackbar.show();
                 } else {
-                    Toast.makeText(this, "Failed to copyPixels: " + copyResult, Toast.LENGTH_LONG).show();
+                    displayToastMsg("Failed to copyPixels: " + copyResult);
                 }
                 handlerThread.quitSafely();
             }, new Handler(handlerThread.getLooper()));
+        }
+    }
+
+    /**
+     * Snackbar message displayer
+     * @param message message string
+     * @param filename file name
+     */
+    public void displaySnackbar(String message, String filename) {
+
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),message, Snackbar.LENGTH_LONG);
+
+        if(!filename.isEmpty()) {
+            snackbar.setAction("사진 보기", v -> {
+                File photoFile = new File(filename);
+
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        this.getPackageName() + ".save.provider",
+                        photoFile);
+                Intent intent = new Intent(Intent.ACTION_VIEW, photoURI);
+                intent.setDataAndType(photoURI, "image/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+
+            });
+            snackbar.show();
         }
     }
 
@@ -773,72 +783,74 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_jeonju:
+            case id.menu_jeonju:
                 displayToastMsg("Jeon-ju clicked..");
                 break;
-            case R.id.menu_yongsan:
+            case id.menu_yongsan:
                 displayToastMsg("Yong-san clicked.");
                 break;
-            case R.id.nav_itm_point_out_yongsan:
+            case id.nav_itm_point_out_yongsan:
                 displayToastMsg("Young-san point out clicked..");
                 displayModelInARScene("YoungSanPointOut_0.sfb");
                 break;
-            case R.id.nav_itm_fence_tester:
-                displayToastMsg("Fence data display test.");
+            case id.nav_itm_fence_tester:
+                //displayToastMsg("Fence data display test.");
                 displayModelInARScene("YongSanPointOutAndDEMAndFence_0.sfb");
+                //displayModelInARScene("YongSanPointOutAndDEMAndFence_1.sfb");
+                //displayModelInARScene("YongSanPointOutAndDEMAndFence_2.sfb");
                 //displayModelInARScene("fence_2.sfb");
                 //displayModelInARScene("fence_1.sfb");
                 break;
-            case R.id.nav_itm_building_yongsan:
+            case id.nav_itm_building_yongsan:
                 displayToastMsg("Young-san building clicked.");
                 displayModelInARScene("YoungSanBuildingDEM_0.sfb");
                 break;
-            case R.id.nav_itm_axis_yongsan:
+            case id.nav_itm_axis_yongsan:
                 displayToastMsg("Young-san Axis out clicked.");
                 break;
-            case R.id.nav_itm_point_out_jeonju:
+            case id.nav_itm_point_out_jeonju:
                 displayToastMsg("Jeon-ju point out clicked.");
                 displayModelInARScene("JeonJuBuildPointOutInterpolate_0.sfb");
                 break;
-            case R.id.nav_itm_building_jeonju:
+            case id.nav_itm_building_jeonju:
                 displayToastMsg("Jeon-ju building clicked.");
                 displayModelInARScene("JeonJuBuildingInterpolate_0.sfb");
                 break;
-            case R.id.nav_itm_axis_jeonju:
+            case id.nav_itm_axis_jeonju:
                 displayToastMsg("Jeon-ju Axis clicked.");
                 break;
-            case R.id.nav_itm_point_out:
+            case id.nav_itm_point_out:
                 displayToastMsg("Common Geo menu point out clicked.");
                 break;
-            case R.id.nav_itm_building:
+            case id.nav_itm_building:
                 displayToastMsg("Common Geo menu Building clicked.");
                 break;
-            case R.id.nav_itm_axis:
+            case id.nav_itm_axis:
                 break;
-            case R.id.nav_itm_marker_pointing:
+            case id.nav_itm_marker_pointing:
                 displayToastMsg("Common menu marker clicked.");
                 onClear();
                 boolMeasureDistOnOff = false;
                 break;
-            case R.id.nav_itm_current_coordinates:
+            case id.nav_itm_current_coordinates:
                 displayToastMsg("Common menu current coordinate clicked.");
                 break;
-            case R.id.nav_itm_measure_distance:
+            case id.nav_itm_measure_distance:
                 displayToastMsg("Common menu mesure distance clicked.");
                 measureDistance();
                 break;
-            case R.id.nav_itm_screen_capture:
+            case id.nav_itm_screen_capture:
                 displayToastMsg("현재 화면을 겔러리에 저장하였습니다.");
                 takePhoto();
 
                 //ImageWorkerService imageWorkerService = new ImageWorkerService();
                 //imageWorkerService.takePhoto(this,arFragment);
                 break;
-            case R.id.nav_itm_lx_app:
+            case id.nav_itm_lx_app:
                 displayToastMsg("LX 공사 랜다랑 앱을 엽니다.");
                 callLx();
                 break;
-            case R.id.nav_itm_gps_frequency:
+            case id.nav_itm_gps_frequency:
                 displayToastMsg("Common menu Show GPS frequency clicked.");
                 break;
 
@@ -854,21 +866,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initLayout() {
 
         // Head bar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("A-GNSS");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        getSupportActionBar().setHomeAsUpIndicator(drawable.ic_menu_white_24dp);
         toolbar.setVisibility(View.GONE); // To set to invisible the head bar
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.masterLayout);
+        drawerLayout = (DrawerLayout) findViewById(id.masterLayout);
         navigationView = (NavigationView) findViewById(nav_view);
         drawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawerLayout,
                 toolbar,
-                R.string.drawer_open,
-                R.string.drawer_close
+                string.drawer_open,
+                string.drawer_close
         );
 
         drawerLayout.addDrawerListener(drawerToggle);
@@ -877,7 +889,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationView.setNavigationItemSelectedListener(this);
 
         // Left floating button for toggling menu view
-        FloatingActionButton flobtnLeftFloating = findViewById(R.id.flobtnLeftFloating);
+        FloatingActionButton flobtnLeftFloating = findViewById(id.flobtnLeftFloating);
         flobtnLeftFloating.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -892,7 +904,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
          * This button for Capture AR view
          * When this taped save a image file to directory
          */
-        FloatingActionButton flobCaptureScreen = findViewById(R.id.flobCaptureScreen);
+        FloatingActionButton flobCaptureScreen = findViewById(id.flobCaptureScreen);
         flobCaptureScreen.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -905,22 +917,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
          * This button placed in right buttom coner.
          * When This button are tabed comes out a view from right.
          */
-        FloatingActionButton flobtnRightFloating = findViewById(R.id.flobtnRightFloating);
+        FloatingActionButton flobtnRightFloating = findViewById(id.flobtnRightFloating);
         flobtnRightFloating.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "Right floating", Toast.LENGTH_SHORT).show();
 
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer);
+                DrawerLayout drawer = (DrawerLayout) findViewById(id.drawer);
                 if (!drawer.isDrawerOpen(Gravity.RIGHT)) {
                     drawer.openDrawer(Gravity.RIGHT);
                 }
             }
         });
 
-        locationView = (TextView) findViewById(R.id.locationView);
-        distanceView = (TextView) findViewById(R.id.distanceView);
+        locationView = (TextView) findViewById(id.locationView);
+        distanceView = (TextView) findViewById(id.distanceView);
     }
 
     /**
@@ -1003,10 +1015,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Initialize AR
+     * Initialize AR and Menu button tab event function
      */
     private void initAR() {
-        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(id.ux_fragment);
         arSceneView = arFragment.getArSceneView();
 
         arFragment.setOnTapArPlaneListener(
@@ -1136,13 +1148,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void displayBuildingPannel() {
         CompletableFuture<ViewRenderable> popupLayout =
                 ViewRenderable.builder()
-                        .setView(this, R.layout.popup_layout)
+                        .setView(this, layout.popup_layout)
                         .build();
 
         // When you build a Renderable, Sceneform loads its resources in the background while returning
         // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
         CompletableFuture<ModelRenderable> andy = ModelRenderable.builder()
-                .setSource(this, R.raw.andy)
+                .setSource(this, raw.andy)
                 .build();
 
         CompletableFuture.allOf(popupLayout, andy)
