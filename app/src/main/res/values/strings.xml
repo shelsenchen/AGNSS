@@ -45,5 +45,5 @@
 
     <!-- Information view -->
     <string name="info_view_title">INFORMATION - AGNSS</string>
-    <string name="info_item_title_location">현재 위치(좌표:위경도)</string>
+    <string name="info_item_title_location">현위치(diameter: Lon, Lat)</string>
 </resources>

@@ -39,6 +39,15 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_menu_white_24dp" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/flobCaptureScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginLeft="@dimen/fab_capture"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:src="@drawable/ic_screenshot_w" />
+
     /* This button for adjusting the right slide view */
 
     <android.support.design.widget.FloatingActionButton

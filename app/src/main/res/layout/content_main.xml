@@ -17,7 +17,7 @@
 
         <fragment
             android:id="@+id/ux_fragment"
-            android:name="com.lx.agnss.service.impl.ArFragmentManager"
+            android:name="com.lx.agnss.ar.ArFragmentManager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

@@ -1,4 +1,4 @@
-package com.lx.agnss.service.impl;
+package com.lx.agnss.lxapp;
 
 /**
  *

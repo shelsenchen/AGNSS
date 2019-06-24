@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -69,16 +67,15 @@ import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
-import com.lx.agnss.service.impl.DemoUtils;
-import com.lx.agnss.service.impl.ImageWorkerService;
+import com.lx.agnss.cmm.referencepoint.ReferencePoint;
+import com.lx.agnss.cmm.referencepoint.ReferencePoints;
+import com.lx.agnss.cmm.tools.DemoUtils;
+import com.lx.agnss.cmm.tools.FileManager;
+import com.lx.agnss.cmm.tools.ImageWorkerService;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,15 +105,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationScene locationScene;
 
     // Renderablesfor this app
-//    private ModelRenderable andyRenderable;
+    // private ModelRenderable andyRenderable;
     private ViewRenderable popupLayoutRenderable;
     private ModelRenderable iconRenderable;
     private ModelRenderable distIconRenderable;
 
-    // Building and Point Out Map for adjusting it.
-    Map<String, BuildingPointOutModel> mapListBuildingPointOutMode = new HashMap<String, BuildingPointOutModel>();
-
-    // 용산 전주 model
+    // YongSan and JeonJu model
     private ModelRenderable mrJeonJuBuildingDEM;
     private ModelRenderable mrJeonJuPointOut;
     private ModelRenderable mrYongSanBuildingDEM;
@@ -160,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager locationManager;
     private LocationListener locationListener;
 
-    //    permmition
+    // permmition
     final int REQUEST_PERMISSION_WRITE_EXTERNAL_STORAGE_ = 1001;
     final int REQUEST_PERMISSION_ACCESS_FINE_LOCATION_ = 1002;
     final int PERMISSION = 1;
@@ -177,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Toolbar toolbar;
 
     /**
-     * on create
+     * On Create Application
      */
     @SuppressLint("MissingPermission")
     @Override
@@ -185,77 +179,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /** Let's get start **/
+        // Let's get start
+        initLayout();                       // Initialization Layout
+        renderModel();                      // Render assets
+        initAR();                           // Make an instance for AR and listner
+        InitGoogleMap(savedInstanceState);  // Initialization google map
+        InitLocationManager();              // Location Manager
+        displayBuildingPannel();            //
 
-        initLayout(); // Initialization Layout
-        renderModel(); // Render assets
-        initAR(); // Make an instance for AR and listner
-
-        // Google map
-        Bundle mapViewBundle = null;
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
-        }
-
-        // Load an ar fragment and assign to fragment layer.
-        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
-        mapFragment.getMapAsync(this);
-
-
-        // initMap();
-
-        // To get location manager from context.
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                currentPostion = new LatLng(location.getLatitude(), location.getLongitude());
-                //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPostion));
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
-                //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-
-                String locationString = getResources().getString(R.string.info_item_title_location);
-                locationString += "\n";
-                locationString += "LON : ";
-                locationString += location.getLongitude();
-                locationString += "\n";
-                locationString += "LAT : ";
-                locationString += location.getLatitude();
-
-                locationView.setText(locationString);
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-                Toast.makeText(getApplicationContext(), "Getting a location manager status.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-                Toast.makeText(getApplicationContext(), "Location manager enabled.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-                Toast.makeText(getApplicationContext(), "Location manager disabled.", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        /* 퍼미션 설정 */
-        if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        /* 퍼미션 설정 끝 */
-
-
-        displayBuildingPannel();
-
-        // Set an update listener on the Scene that will hide the loading message once a Plane is
-        // detected.
+        // Set an update listener on the Scene that will hide the loading message once a Plane is detected.
         arSceneView
                 .getScene()
                 .addOnUpdateListener(
@@ -271,6 +203,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                 // Now lets create our location markers.
                                 // First, a layout
+                                ReferencePoints referencePoint = new ReferencePoints();
+
+                                for(ReferencePoint rp: referencePoint.getList()) {
+                                    rp.locationMarker.setRenderEvent(new LocationNodeRender() {
+                                        @Override
+                                        public void render(LocationNode locationNode) {
+                                            View eView = popupLayoutRenderable.getView();
+                                            TextView distanceTextView = eView.findViewById(R.id.textView2);
+                                            TextView nameView = eView.findViewById(R.id.textView1);
+                                            TextView addrView = eView.findViewById(R.id.textView3);
+                                            nameView.setText(rp.locationName);
+                                            distanceTextView.setText("lon: " + rp.locationMarker.longitude + ": " + rp.locationMarker.latitude);
+                                            addrView.setText(rp.locationDescription);
+                                        }
+                                    });
+                                }
+
                                 List<LocationMarker> LLM = new ArrayList<LocationMarker>();
                                 LocationMarker layoutLocationMarker = new LocationMarker(
                                         37.532946, 126.959868,
@@ -299,14 +248,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 LLM.add(layoutLocationMarker);
 
                                 locationScene.mLocationMarkers.addAll(LLM);
-
-                                // Adding a simple location marker of a 3D model
-//                                locationScene.mLocationMarkers.add(
-//                                        new LocationMarker(
-//                                                37.399543,
-//                                                127.107045,
-//                                                getAndy()));
-
                             }
 
                             Frame frame = arSceneView.getArFrame();
@@ -336,7 +277,72 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ARLocationPermissionHelper.requestPermission(this);
 
     }
-    /* OnCreate End */
+    // OnCreate End
+
+
+    private void InitLocationManager() {
+        // To get location manager from context.
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                currentPostion = new LatLng(location.getLatitude(), location.getLongitude());
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPostion));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(currentPostion));
+                //info03.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
+
+                String locationString = getResources().getString(R.string.info_item_title_location);
+                locationString += "\n";
+                locationString += "Lon: ";
+                locationString += location.getLongitude();
+                locationString += "\n";
+                locationString += "Lat: ";
+                locationString += location.getLatitude();
+
+                locationView.setText(locationString);
+
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                displayToastMsg("Getting a location manager status.");
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                displayToastMsg("Location manager enabled.");
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                displayToastMsg("Location manager disabled.");
+            }
+        };
+
+        /* 퍼미션 설정 */
+            if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER))
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+            if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER))
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+    }
+
+    /* 퍼미션 설정 끝 */
+    /**
+     * Init google map
+     */
+    private void InitGoogleMap(Bundle savedInstanceState) {
+        // Google map
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+
+        // Load an ar fragment and assign to fragment layer.
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
+    }
 
     /**
      * Get start map(start?)
@@ -389,7 +395,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Take a screen capture
      */
     private void takePhoto() {
-        final String filename = generateFilename();
+
+        FileManager fileManager = new FileManager();
+
+        final String filename = fileManager.getNewFilename();
+
         ArSceneView view = arFragment.getArSceneView();
 
         // Create a bitmap the size of the scene view.
@@ -398,6 +408,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Create a handler thread to offload the processing of the image.
         final HandlerThread handlerThread = new HandlerThread("PixelCopier");
         handlerThread.start();
+
         // Make the request to copy.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             PixelCopy.request(view, bitmap, (copyResult) -> {
@@ -409,9 +420,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         Bitmap fContainerLayoutView = fContainer.getDrawingCache();
 
-                        Bitmap result = mergeToPin(bitmap, fContainerLayoutView);
+                        Bitmap result = new ImageWorkerService().mergeToPin(bitmap, fContainerLayoutView);
 
-                        saveBitmapToDisk(result, filename);
+                        fileManager.saveBitmapToDisk(result, filename);
 
                     } catch (IOException e) {
                         Toast toast = Toast.makeText(this, e.toString(),
@@ -440,64 +451,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 handlerThread.quitSafely();
             }, new Handler(handlerThread.getLooper()));
         }
-    }
-
-    /**
-     * Save bitmap to disk
-     *
-     * @param bitmap
-     * @param filename
-     * @throws IOException
-     */
-    private void saveBitmapToDisk(Bitmap bitmap, String filename) throws IOException {
-
-        File out = new File(filename);
-        if (!out.getParentFile().exists()) {
-            out.getParentFile().mkdirs();
-        }
-        try (FileOutputStream outputStream = new FileOutputStream(filename);
-             ByteArrayOutputStream outputData = new ByteArrayOutputStream()) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputData);
-            outputData.writeTo(outputStream);
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException ex) {
-            throw new IOException("Failed to save bitmap to disk", ex);
-        }
-    }
-
-    /**
-     * Make a file name
-     *
-     * @return
-     */
-    private String generateFilename() {
-        String date =
-                null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            date = new SimpleDateFormat("yyyyMMddHHmmss", java.util.Locale.getDefault()).format(new Date());
-        }
-        return Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM) + File.separator + "Screenshots/" + date + "_screenshot.jpg";
-    }
-
-    /**
-     * Merge bitmap between
-     *
-     * @param back
-     * @param front
-     * @return
-     */
-    public static Bitmap mergeToPin(Bitmap back, Bitmap front) {
-        Bitmap result = Bitmap.createBitmap(back.getWidth(), back.getHeight(), back.getConfig());
-        Canvas canvas = new Canvas(result);
-        int widthBack = 300; //back.getWidth();
-        int widthFront = 100; //front.getWidth();
-        //float move = (widthBack - widthFront) / 2;
-        canvas.drawBitmap(back, 0f, 0f, null);
-        //canvas.drawBitmap(front, move, move, null);
-        canvas.drawBitmap(front, 0, 0, null);
-        return result;
     }
 
     /**
@@ -547,7 +500,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * NC soft pannel
-     *
      * @return
      */
     private Node getExampleView() {
@@ -557,9 +509,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Add  listeners etc here
         View eView = popupLayoutRenderable.getView();
         eView.setOnTouchListener((v, event) -> {
-            Toast.makeText(
-                    c, "NC 소프트\n(37.399464, 127.108851)", Toast.LENGTH_LONG)
-                    .show();
+            Toast.makeText(c, "NC 소프트\n(37.399464, 127.108851)", Toast.LENGTH_LONG).show();
             return false;
         });
 
@@ -777,6 +727,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
+     * This function place an object as a building or point out.
+     * This needs a node for placing an object.
      * @param fragment
      * @param anchor
      * @param model
@@ -797,6 +749,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
+     * This function add a node to scene.
+     * The node is offerd for placing an object on AR view.
      * @param fragment
      * @param anchor
      * @param renderable
@@ -880,11 +834,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 //ImageWorkerService imageWorkerService = new ImageWorkerService();
                 //imageWorkerService.takePhoto(this,arFragment);
                 break;
-            case R.id.nav_itm_screen_capture_by_class:
-                displayToastMsg("Capture screen class tester works.");
-                ImageWorkerService iws = new ImageWorkerService(this, arFragment);
-                iws.takePhoto();
-                break;
             case R.id.nav_itm_lx_app:
                 displayToastMsg("LX 공사 랜다랑 앱을 엽니다.");
                 callLx();
@@ -934,12 +883,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 // Toggle left side menu
-                Toast.makeText(getApplicationContext(), "Left Slide", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "Left Slide", Toast.LENGTH_SHORT).show();
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
-        /** Right floating button for toggling info view*/
+        /**
+         * This button for Capture AR view
+         * When this taped save a image file to directory
+         */
+        FloatingActionButton flobCaptureScreen = findViewById(R.id.flobCaptureScreen);
+        flobCaptureScreen.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                takePhoto();
+            }
+        });
+
+        /**
+         * This button placed in right buttom coner.
+         * When This button are tabed comes out a view from right.
+         */
         FloatingActionButton flobtnRightFloating = findViewById(R.id.flobtnRightFloating);
         flobtnRightFloating.setOnClickListener(new View.OnClickListener() {
 
@@ -963,7 +928,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private void renderModel() {
         /* 기본 마커 아이콘 */
-//        fnModelRenderableWorker("default_icon.sfb", iconRenderable);
+        // fnModelRenderableWorker("default_icon.sfb", iconRenderable);
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
                 .setSource(this, Uri.parse("default_icon.sfb"))
@@ -978,7 +943,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         /* 거리측정용 마커 아이콘*/
-//        fnModelRenderableWorker("reverse_drop.sfb", distIconRenderable);
+        // fnModelRenderableWorker("reverse_drop.sfb", distIconRenderable);
         ModelRenderable.builder()
                 //.setSource(this,R.raw.andy)
                 .setSource(this, Uri.parse("reverse_drop.sfb"))
@@ -1126,17 +1091,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         distIcon.select();
                     }
 
-                    // 용산 지적
-                    if (mrYongSanPointOut != null && boolYongSanPointOut == true) {
-                        Anchor makeAnchor = hitResult.createAnchor();
-                        AnchorNode anchorNode = new AnchorNode(makeAnchor);
-                        anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-                        TransformableNode distIcon = new TransformableNode(arFragment.getTransformationSystem());
-                        distIcon.setParent(anchorNode);
-                        distIcon.setRenderable(mrYongSanPointOut);
-                        distIcon.select();
-                    }
                     // 용산 지적 고도 fense
                     if (mrFenceTester != null && boolFenceTester == true) {
                         Anchor makeAnchor = hitResult.createAnchor();
@@ -1249,12 +1204,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-}
-
-
-class BuildingPointOutModel {
-    String id;
-    String path;
-    ModelRenderable mrModelRenderable;
-    Boolean boolModelEnableDisable = false;
 }

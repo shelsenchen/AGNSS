@@ -88,10 +88,6 @@
                 android:icon="@drawable/ic_screenshot_w"
                 android:title="@string/nav_itm_screen_capture" />
             <item
-                android:id="@+id/nav_itm_screen_capture_by_class"
-                android:icon="@drawable/ic_screenshot_w"
-                android:title="@string/nav_itm_screen_capture_by_class" />
-            <item
                 android:id="@+id/nav_itm_lx_app"
                 android:icon="@drawable/ic_link_w"
                 android:title="@string/nav_itm_lx_app" />
